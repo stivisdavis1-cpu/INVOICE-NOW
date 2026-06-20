@@ -65,7 +65,7 @@ export function useNotificationEngine() {
                 addNotification({
                    title: alert.name,
                    message: `Alerte (${alert.name}) : La facture ${inv.number || 'Brouillon'} a dépassé son échéance de ${diffDays} jours.`,
-                   type: 'error',
+                   type: 'warning',
                    link: `/invoices/${inv.id}`
                 });
               }
