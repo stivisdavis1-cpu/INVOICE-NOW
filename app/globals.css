@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #0B60B0;
+  --primary-light: #E6F0F9;
+  --primary-dark: #0B355A;
+  --bg: #F8F9FB; /* Very light grey/blue for main background */
+  --sidebar-bg: #FFFFFF;
+  --text-primary: #111827;
+  --text-muted: #6B7280;
+  
+  --badge-paid: #22C55E;
+  --badge-sent: #F97316;
+  --badge-draft: #9CA3AF;
+  --badge-late: #EF4444;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-background: var(--bg);
+  --color-foreground: var(--text-primary);
+  --color-muted: var(--text-muted);
+
+  --color-paid: var(--badge-paid);
+  --color-sent: var(--badge-sent);
+  --color-draft: var(--badge-draft);
+  --color-late: var(--badge-late);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Base styles for Recharts */
+.recharts-tooltip-cursor {
+  fill: rgba(0,0,0,0.02);
+}
+
+/* Custom styling for Date Inputs */
+input[type="date"] {
+  position: relative;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  padding: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: var(--primary);
+  opacity: 0.8;
+}
+
+/* Hide scrollbar for horizontal scroll areas */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Perfect Invoice Printing */
+@media print {
+  @page {
+    margin: 0; /* Remove headers/footers completely */
+    size: auto;
+  }
+  
+  body * {
+    visibility: hidden;
+  }
+  
+  #invoice-print-container, #invoice-print-container * {
+    visibility: visible;
+  }
+  
+  #invoice-print-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px; /* Some padding for nice layout */
+  }
+
+  /* Force background colors to print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+@theme {
+  --font-sans: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
