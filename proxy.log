@@ -2560,3 +2560,7 @@ Response: 204
 Response: 200
 2026-06-20T20:14:16.821Z | PATCH https://qnqyvaverroxgpmjbdxr.supabase.co/rest/v1/settings?id=eq.76de2a39-4443-47d0-bf74-9c36697e1012&select=* | Body: {"company_name":"YOYO","ninea":"1456","rccm":"489653","address":"","default_tva":19.16,"currency":"X
 Response: 200
+2026-06-20T20:36:25.278Z | POST https://qnqyvaverroxgpmjbdxr.supabase.co/auth/v1/token?grant_type=refresh_token | Body: {"refresh_token":"qxq4ejkg6fpg"}
+2026-06-20T20:36:25.296Z | POST https://qnqyvaverroxgpmjbdxr.supabase.co/auth/v1/token?grant_type=refresh_token | Body: {"refresh_token":"qxq4ejkg6fpg"}
+Response: 200
+Response: 200

@@ -54,25 +54,8 @@ async function handleRequest(req: NextRequest, params: { path: string[] }) {
     fetchOptions.body = await req.arrayBuffer();
   }
 
-  const fs = require('fs');
-  let bodyForLog = 'none';
-  if (fetchOptions.body) {
-    try {
-      const decoder = new TextDecoder('utf-8', { fatal: true });
-      // Only log first 100 chars if it's valid UTF-8
-      bodyForLog = decoder.decode((fetchOptions.body as ArrayBuffer).slice(0, 100)).replace(/\n/g, ' ');
-    } catch (e) {
-      bodyForLog = '[Binary Data]';
-    }
-  }
-  
-  const logEntry = `${new Date().toISOString()} | ${req.method} ${targetUrl} | Body: ${bodyForLog}\n`;
-  fs.appendFileSync('proxy.log', logEntry);
-
   try {
     const response = await fetch(targetUrl, fetchOptions);
-    
-    fs.appendFileSync('proxy.log', `Response: ${response.status}\n`);
     
     const responseHeaders = new Headers(response.headers);
     responseHeaders.delete("content-encoding");
