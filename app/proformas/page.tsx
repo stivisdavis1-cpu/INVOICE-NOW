@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useDataStore, Invoice, InvoiceStatus } from '@/store/data-store';
-import { Plus, Search, MoreHorizontal, ChevronUp, ChevronDown, FileText, Send, CheckCircle2, AlertCircle, Download, Eye } from 'lucide-react';
+import { Plus, Search, MoreHorizontal, ChevronUp, ChevronDown, FileText, Send, CheckCircle2, AlertCircle, Download, Eye, FileArchive } from 'lucide-react';
 import { calculateInvoice, formatCFA, formatDate, cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/hooks/use-translation';
