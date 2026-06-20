@@ -60,7 +60,7 @@ async function handleRequest(req: NextRequest, params: { path: string[] }) {
     try {
       const decoder = new TextDecoder('utf-8', { fatal: true });
       // Only log first 100 chars if it's valid UTF-8
-      bodyForLog = decoder.decode(fetchOptions.body.slice(0, 100)).replace(/\n/g, ' ');
+      bodyForLog = decoder.decode((fetchOptions.body as ArrayBuffer).slice(0, 100)).replace(/\n/g, ' ');
     } catch (e) {
       bodyForLog = '[Binary Data]';
     }
