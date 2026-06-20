@@ -69,7 +69,7 @@ export default function LoginPage() {
     return {
       title: "Une erreur inattendue est survenue",
       description: "Le système a rencontré un problème lors du traitement de votre demande.",
-      action: "Veuillez réessayer. Si le problème persiste, contactez le support."
+      action: `Détail technique: ${msg.substring(0, 150)}`
     };
   }
 

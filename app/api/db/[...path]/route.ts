@@ -29,7 +29,12 @@ async function handleRequest(req: NextRequest, params: { path: string[] }) {
   const url = new URL(req.url);
   const searchParams = url.searchParams.toString();
   
-  const targetUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/${path}${searchParams ? `?${searchParams}` : ""}`;
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return new NextResponse(JSON.stringify({ error: "Configuration Error", details: "NEXT_PUBLIC_SUPABASE_URL is missing on the server." }), { status: 500, headers: { "Content-Type": "application/json" } });
+  }
+  
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL.replace(/\/+$/, "");
+  const targetUrl = `${baseUrl}/${path}${searchParams ? `?${searchParams}` : ""}`;
   
   // Only forward explicitly allowed safe headers
   const headers = new Headers();
@@ -49,9 +54,9 @@ async function handleRequest(req: NextRequest, params: { path: string[] }) {
   };
   
   if (req.method !== "GET" && req.method !== "HEAD" && req.method !== "OPTIONS") {
-    // Read the body as an ArrayBuffer to preserve binary data (e.g. image uploads)
-    // reading as text() corrupts binary files!
-    fetchOptions.body = await req.arrayBuffer();
+    fetchOptions.body = req.body;
+    // @ts-ignore: Required by Node.js for streaming fetch bodies
+    fetchOptions.duplex = "half";
   }
 
   try {
