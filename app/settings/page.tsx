@@ -277,7 +277,7 @@ export default function SettingsPage() {
         </div>
         <button
           onClick={() => {
-            const nextPlan = currentPlan === 'free' ? 'intermediate' : currentPlan === 'intermediate' ? 'premium' : 'free';
+            const nextPlan: 'free' | 'intermediate' | 'premium' = currentPlan === 'free' ? 'intermediate' : currentPlan === 'intermediate' ? 'premium' : 'free';
             const newSettings = { ...localSettings, plan: nextPlan, isPremium: nextPlan === 'premium' };
             setLocalSettings(newSettings);
             updateSettings(newSettings);
