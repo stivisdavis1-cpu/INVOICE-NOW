@@ -182,7 +182,7 @@ interface DataStore {
   setActiveEmployee: (id: string | null) => void;
   addEmployee: (employee: Omit<Employee, 'id'>) => void;
   updateEmployee: (id: string, data: Partial<Employee>) => void;
-  updateEmployeeStatus: (id: string, status: 'active' | 'pending' | 'rejected') => Promise<void>;
+  updateEmployeeStatus: (id: string, status: 'active' | 'pending' | 'rejected', role?: 'admin' | 'manager' | 'accountant' | 'creator') => Promise<void>;
   deleteEmployee: (id: string) => void;
   addWorkflow: (workflow: Omit<Workflow, 'id'>) => void;
   updateWorkflow: (id: string, data: Partial<Workflow>) => void;
@@ -409,13 +409,13 @@ export const useDataStore = create<DataStore>((set, get) => ({
   setActiveEmployee: (id) => set({ activeEmployeeId: id }),
   addEmployee: (employee) => set((state) => ({ employees: [...state.employees, { ...employee, id: generateId('EMP'), status: 'active' }] })),
   updateEmployee: (id, data) => set((state) => ({ employees: state.employees.map(e => e.id === id ? { ...e, ...data } : e) })),
-  updateEmployeeStatus: async (id, status) => {
+  updateEmployeeStatus: async (id, status, role) => {
     const { activeCompanyId } = get();
     if (!activeCompanyId) return;
     try {
-      await api.updateEmployeeStatus(activeCompanyId, id, status);
+      await api.updateEmployeeStatus(activeCompanyId, id, status, role);
       set((state) => ({
-        employees: state.employees.map(e => e.id === id ? { ...e, status } : e)
+        employees: state.employees.map(e => e.id === id ? { ...e, status, ...(role ? { role } : {}) } : e)
       }));
     } catch (error) {
       console.error("Failed to update employee status:", error);

@@ -58,11 +58,15 @@ export const api = {
     })
   },
 
-  async updateEmployeeStatus(companyId: string, userId: string, status: 'active' | 'pending' | 'rejected') {
+  async updateEmployeeStatus(companyId: string, userId: string, status: 'active' | 'pending' | 'rejected', role?: 'admin' | 'manager' | 'accountant' | 'creator') {
     const supabase = createClient()
+    const updatePayload: any = { status }
+    if (role) {
+      updatePayload.role = role
+    }
     const { error } = await supabase
       .from('company_users')
-      .update({ status })
+      .update(updatePayload)
       .match({ company_id: companyId, user_id: userId })
 
     if (error) throw error

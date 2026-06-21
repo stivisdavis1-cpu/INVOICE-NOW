@@ -166,6 +166,7 @@ export default function SettingsPage() {
   const updateEmployeeStatus = useDataStore((state) => state.updateEmployeeStatus);
 
   const [newEmployee, setNewEmployee] = useState({ name: '', email: '', role: 'creator' as const, password: '' });
+  const [pendingRoles, setPendingRoles] = useState<Record<string, 'admin' | 'manager' | 'accountant' | 'creator'>>({});
 
   // States for Workflow Modals
   const [isNewWfModalOpen, setIsNewWfModalOpen] = useState(false);
@@ -1013,8 +1014,18 @@ export default function SettingsPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
+                            <select
+                              value={pendingRoles[emp.id] || 'creator'}
+                              onChange={(e) => setPendingRoles({ ...pendingRoles, [emp.id]: e.target.value as 'admin' | 'manager' | 'accountant' | 'creator' })}
+                              className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-sm font-medium"
+                            >
+                              <option value="creator">Créateur</option>
+                              <option value="accountant">Comptable</option>
+                              <option value="manager">Manager</option>
+                              <option value="admin">Administrateur</option>
+                            </select>
                             <button 
-                              onClick={() => updateEmployeeStatus(emp.id, 'active')}
+                              onClick={() => updateEmployeeStatus(emp.id, 'active', pendingRoles[emp.id] || 'creator')}
                               className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors font-medium text-sm shadow-sm"
                             >
                               <Check className="w-4 h-4" />
