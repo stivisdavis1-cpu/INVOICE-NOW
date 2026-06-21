@@ -258,7 +258,7 @@ export const api = {
     }
     if (metadataToSave !== undefined) dbUpdates.metadata = metadataToSave;
 
-    const { error: invError } = await supabase.from('invoices').update(dbUpdates).eq('id', id)
+    const { data: updatedData, error: invError } = await supabase.from('invoices').update(dbUpdates).eq('id', id).select().single()
     if (invError) throw invError
 
     // Handle lines (simplest way is delete all and re-insert)
