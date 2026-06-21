@@ -16,22 +16,22 @@ import { useTranslation } from '@/hooks/use-translation';
 import { useUIStore } from '@/store/ui-store';
 
 const invoiceLineSchema = z.object({
-  id: z.string().optional(),
-  type: z.string().optional(),
-  category: z.string().optional(),
-  reference: z.string().optional(),
-  deliverables: z.string().optional(),
-  unit: z.string().optional(),
-  isForfait: z.boolean().optional(),
+  id: z.string().nullable().optional(),
+  type: z.string().nullable().optional(),
+  category: z.string().nullable().optional(),
+  reference: z.string().nullable().optional(),
+  deliverables: z.string().nullable().optional(),
+  unit: z.string().nullable().optional(),
+  isForfait: z.boolean().nullable().optional(),
   description: z.string().min(1, 'La description est requise'),
   quantity: z.coerce.number().min(0, 'Min 0'),
   unitPrice: z.coerce.number().min(0, 'Min 0'),
 });
 
 const invoiceSchema = z.object({
-  number: z.string().optional(),
+  number: z.string().nullable().optional(),
   clientId: z.string().min(1, 'Le client est requis'),
-  type: z.string().optional(),
+  type: z.string().nullable().optional(),
   issueDate: z.string().min(1, 'La date est requise'),
   dueDate: z.string().min(1, 'L\'échéance est requise'),
   lines: z.array(invoiceLineSchema).min(1, 'Au moins une ligne est requise'),
@@ -538,10 +538,13 @@ export function InvoiceForm({ initialData, fixedType }: InvoiceFormProps) {
         {/* Fixed Footer */}
         <div className="p-4 bg-white border-t border-gray-200 shrink-0 shadow-[0_-4px_15px_rgba(0,0,0,0.03)] z-20 sticky bottom-0 lg:relative">
            <button 
-             type="button"
-             onClick={handleSubmit((data) => onSave(data, 'draft'))}
-             className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-3 rounded-lg font-semibold transition-all shadow-md active:scale-[0.98]"
-           >
+            type="button"
+            onClick={handleSubmit(
+              (data) => onSave(data, initialData ? initialData.status : 'sent'),
+              (errors) => alert("Le formulaire contient des erreurs : " + JSON.stringify(errors, null, 2))
+            )}
+            className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-6 rounded-[24px] shadow-sm hover:shadow-[0_12px_30px_rgba(45,139,111,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out active:scale-[0.98] flex items-center justify-center gap-2 group"
+          >
              <Save className="w-5 h-5" />
              {initialData ? 'Enregistrer les modifications' : 'Créer le document'}
            </button>
