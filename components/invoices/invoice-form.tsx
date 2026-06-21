@@ -79,6 +79,7 @@ export function InvoiceForm({ initialData, fixedType }: InvoiceFormProps) {
   const defaultDueDate = nextMonth.toISOString().split('T')[0];
 
   const { register, control, handleSubmit, watch, setValue, formState: { errors } } = useForm<InvoiceFormValues>({
+    // @ts-ignore
     resolver: zodResolver(invoiceSchema),
     mode: 'onChange',
     defaultValues: initialData ? {
@@ -135,7 +136,8 @@ export function InvoiceForm({ initialData, fixedType }: InvoiceFormProps) {
     }
   }, [settings, initialData, hasSyncedSettings, setValue]);
 
-  const { subtotal, tva, total, discountAmount } = calculateInvoice(watchAll.lines || [], watchAll.metadata);
+  // @ts-ignore
+  const { subtotal, tva, total, discountAmount } = calculateInvoice(watchAll.lines as any || [], watchAll.metadata);
 
   const onSave = async (data: InvoiceFormValues, status: InvoiceStatus) => {
     // Generate IDs for new lines if missing
@@ -147,7 +149,8 @@ export function InvoiceForm({ initialData, fixedType }: InvoiceFormProps) {
     try {
       if (initialData) {
         await updateInvoice(initialData.id, {
-          ...data,
+          ...(data as any),
+
           type: docType as any as DocumentType,
           status,
           lines: linesWithIds
@@ -437,7 +440,7 @@ export function InvoiceForm({ initialData, fixedType }: InvoiceFormProps) {
                               <input
                                 type="number"
                                 {...register(`lines.${index}.quantity`, { valueAsNumber: true })}
-                                disabled={watchAll.lines[index]?.isForfait}
+                                disabled={!!watchAll.lines[index]?.isForfait}
                                 className="w-full bg-white border border-gray-300 rounded-sm px-1.5 py-1 focus:border-gray-800 focus:ring-1 focus:ring-gray-800/20 outline-none text-[11px] text-gray-900 disabled:opacity-50"
                                 placeholder="Qté"
                               />
@@ -538,10 +541,9 @@ export function InvoiceForm({ initialData, fixedType }: InvoiceFormProps) {
         {/* Fixed Footer */}
         <div className="p-4 bg-white border-t border-gray-200 shrink-0 shadow-[0_-4px_15px_rgba(0,0,0,0.03)] z-20 sticky bottom-0 lg:relative">
            <button 
-            type="button"
             onClick={handleSubmit(
-              (data) => onSave(data, initialData ? initialData.status : 'sent'),
-              (errors) => alert("Le formulaire contient des erreurs : " + JSON.stringify(errors, null, 2))
+              (data) => onSave(data as unknown as InvoiceFormValues, initialData ? initialData.status : 'sent'),
+              (errors) => alert("Le formulaire contient des erreurs : " + JSON.stringify(errors))
             )}
             className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-6 rounded-[24px] shadow-sm hover:shadow-[0_12px_30px_rgba(45,139,111,0.2)] hover:-translate-y-1 transition-all duration-300 ease-out active:scale-[0.98] flex items-center justify-center gap-2 group"
           >

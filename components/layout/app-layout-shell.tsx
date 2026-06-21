@@ -22,10 +22,10 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
     
     // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session && pathname !== '/login') {
+      if (!session && pathname !== '/login' && pathname !== '/') {
         router.push('/login');
-      } else if (session && pathname === '/login') {
-        router.push('/');
+      } else if (session && (pathname === '/login' || pathname === '/')) {
+        router.push('/dashboard');
       } else if (session && !initialized.current) {
         initialized.current = true;
         initializeStore();
@@ -50,7 +50,7 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
   }, [initializeStore, clearStore, pathname, router]);
 
   // Prevent rendering protected content before auth check
-  if (isAuthChecking && pathname !== '/login') {
+  if (isAuthChecking && pathname !== '/login' && pathname !== '/') {
     return <div className="min-h-screen w-full bg-slate-50 flex items-center justify-center">Chargement...</div>;
   }
 
@@ -80,9 +80,9 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
   // On determine si on est sur une page de création/édition
   const isEditorPage = pathname.includes('/invoices/') || pathname.includes('/proformas/');
 
-  // Ne pas afficher la sidebar et le header sur la page de login
-  if (pathname === '/login') {
-    return <main className="min-h-screen w-full bg-slate-50 flex items-center justify-center">{children}</main>;
+  // Ne pas afficher la sidebar et le header sur la page de login ou la landing page
+  if (pathname === '/login' || pathname === '/') {
+    return <main className="min-h-screen w-full bg-slate-50">{children}</main>;
   }
 
   return (

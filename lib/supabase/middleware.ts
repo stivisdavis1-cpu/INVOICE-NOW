@@ -37,6 +37,7 @@ export async function updateSession(request: NextRequest) {
 
   if (
     !user &&
+    request.nextUrl.pathname !== '/' &&
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
     !request.nextUrl.pathname.startsWith('/api/db') &&
@@ -48,10 +49,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If user is logged in and trying to access /login, redirect to home
-  if (user && request.nextUrl.pathname.startsWith('/login')) {
+  // If user is logged in and trying to access /login or / (Landing), redirect to /dashboard
+  if (user && (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname === '/')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 

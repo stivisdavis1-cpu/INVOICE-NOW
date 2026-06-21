@@ -17,12 +17,13 @@ Ce document sert de référence technique complète pour l'application **IZI Fac
   * Support de modèles (templates) Word personnalisés importés par l'utilisateur.
   * **Post-processing XML** automatique qui met en gras et grise (couleur `E2E8F0`) les lignes de Sections, et met en gras les lignes de Sous-totaux, quel que soit le modèle utilisé.
 * **Exportation Excel** : Exportation des rapports financiers (Fonctionnalité Premium).
-* **Paramètres avancés & Multi-Workspace** :
-  * Gestion Multi-Entreprises : Un même utilisateur peut gérer plusieurs sociétés (Workspaces) de manière isolée via Supabase RLS.
+* **Paramètres avancés & Architecture SaaS (Multi-Workspace)** :
+  * **Gestion Multi-Entreprises** : Un même utilisateur peut appartenir à plusieurs sociétés (Workspaces) avec des rôles différents. La table pivot `company_users` relie les utilisateurs `auth.users` aux `companies`.
+  * **Isolation RLS Parfaite** : Absolument TOUTES les tables contenant des données métier (`invoices`, `clients`, `settings`, `payments`, `workflows`, `notifications`) utilisent des politiques Supabase **Row Level Security (RLS)** adossées à la fonction `user_belongs_to_company(company_id)`. Aucune donnée ne peut fuiter d'une entreprise à une autre.
   * Personnalisation de l'entreprise (Nom, NINEA, RCCM, Adresse, Logo).
   * Personnalisation du thème (Couleur principale).
-  * Gestion d'équipe et de rôles (Workflows de validation).
-  * Système de notifications et d'alertes personnalisées avec un tout nouveau système de **Toasts animés** (Notifications non-bloquantes) pour les succès et erreurs.
+  * **Workflows et Notifications synchronisés** : Les processus d'approbation et le centre de notifications sont persistés en base de données et propagés à tous les collaborateurs de l'entreprise ciblés par les Workflows.
+  * Système d'alertes personnalisées avec un système de **Toasts animés** pour un retour UI immédiat.
 
 ## 3. Structure des fichiers (Architecture Next.js App Router)
 ```text

@@ -153,8 +153,9 @@ export interface Settings {
   enableWorkflows: boolean;
   themeColor?: string;
   logo?: string;
-  plan?: 'free' | 'intermediate' | 'premium';
+  plan?: 'gratuit' | 'intermediaire' | 'premium';
   isPremium?: boolean; // Kept for backwards compatibility
+  trialEndDate?: string;
   twoFactorEnabled?: boolean;
 }
 
@@ -266,8 +267,8 @@ const initialSettings: Settings = {
     }
   ],
   enableWorkflows: false,
-  plan: 'premium',
-  isPremium: true,
+  plan: 'gratuit',
+  isPremium: false,
   themeColor: '#0B60B0',
   twoFactorEnabled: false,
 };
@@ -313,14 +314,14 @@ export const useDataStore = create<DataStore>((set, get) => ({
 
   initializeStore: async () => {
     try {
-      const companies = await api.getUserCompanies();
+      const companies = await (api as any).getUserCompanies();
       let activeCompanyId = get().activeCompanyId;
 
       if (!activeCompanyId && typeof window !== 'undefined') {
         activeCompanyId = localStorage.getItem('activeCompanyId');
       }
 
-      if (!activeCompanyId || !companies.find(c => c.id === activeCompanyId)) {
+      if (!activeCompanyId || !companies.find((c: any) => c.id === activeCompanyId)) {
         activeCompanyId = companies.length > 0 ? companies[0].id : null;
         if (activeCompanyId && typeof window !== 'undefined') {
           localStorage.setItem('activeCompanyId', activeCompanyId);
@@ -332,13 +333,15 @@ export const useDataStore = create<DataStore>((set, get) => ({
         return;
       }
 
-      const [dbClients, dbInvoices, dbSettings, dbPayments, dbEmployees, currentUserProfile] = await Promise.all([
+      const [dbClients, dbInvoices, dbSettings, dbPayments, dbEmployees, currentUserProfile, dbWorkflows, dbNotifications] = await Promise.all([
         api.getClients(activeCompanyId),
         api.getInvoices(activeCompanyId),
         api.getSettings(activeCompanyId),
         api.getPayments(activeCompanyId),
         api.getEmployees(activeCompanyId),
-        api.getCurrentUserProfile()
+        api.getCurrentUserProfile(),
+        api.getWorkflows(activeCompanyId),
+        api.getNotifications(activeCompanyId)
       ]);
 
       const mappedClients = dbClients.map((c: any) => ({
@@ -389,6 +392,8 @@ export const useDataStore = create<DataStore>((set, get) => ({
         settings: settings, 
         payments: mappedPayments,
         employees: dbEmployees,
+        workflows: dbWorkflows || [],
+        notifications: dbNotifications || [],
         activeEmployeeId: currentUserProfile?.id || null
       });
     } catch (e: any) {
@@ -396,26 +401,54 @@ export const useDataStore = create<DataStore>((set, get) => ({
     }
   },
   
-  addNotification: (notification) => set((state) => ({
-    notifications: [{ ...notification, id: generateId('NOTIF'), date: new Date().toISOString(), isRead: false }, ...state.notifications]
-  })),
+  addNotification: async (notification) => {
+    const companyId = get().activeCompanyId;
+    if (!companyId) return;
+    const tempId = generateId('NOTIF');
+    const newNotif = { ...notification, id: tempId, date: new Date().toISOString(), isRead: false } as AppNotification;
+    set((state) => ({ notifications: [newNotif, ...state.notifications] }));
+    try {
+      const realNotif = await api.addNotification(companyId, newNotif);
+      set((state) => ({
+        notifications: state.notifications.map(n => n.id === tempId ? { ...n, id: realNotif.id } : n)
+      }));
+    } catch (e) {
+      console.error('Failed to add notification', e);
+      set((state) => ({ notifications: state.notifications.filter(n => n.id !== tempId) }));
+    }
+  },
 
-  markNotificationAsRead: (id) => set((state) => ({
-    notifications: state.notifications.map(n => n.id === id ? { ...n, isRead: true } : n)
-  })),
+  markNotificationAsRead: async (id) => {
+    set((state) => ({
+      notifications: state.notifications.map(n => n.id === id ? { ...n, isRead: true } : n)
+    }));
+    try {
+      await api.markNotificationAsRead(id);
+    } catch (e) {
+      console.error('Failed to mark notification as read', e);
+    }
+  },
 
-  markAllAsRead: (employeeId, role) => set((state) => ({
-    notifications: state.notifications.map(n => {
-      const isGlobal = !n.targetRole && !n.targetRoles && !n.targetEmployeeId && !n.targetEmployeeIds;
-      const matchesRole = n.targetRole === role || n.targetRole === 'any' || (n.targetRoles && (n.targetRoles.includes(role) || n.targetRoles.includes('any')));
-      const matchesEmployee = n.targetEmployeeId === employeeId || (n.targetEmployeeIds && n.targetEmployeeIds.includes(employeeId));
-      
-      if (isGlobal || matchesRole || matchesEmployee) {
-        return { ...n, isRead: true };
-      }
-      return n;
-    })
-  })),
+  markAllAsRead: async (employeeId, role) => {
+    const companyId = get().activeCompanyId;
+    if (!companyId) return;
+    set((state) => ({
+      notifications: state.notifications.map(n => {
+        const isGlobal = !n.targetRole && !n.targetRoles && !n.targetEmployeeId && !n.targetEmployeeIds;
+        const matchesRole = n.targetRole === role || n.targetRole === 'any' || (n.targetRoles && (n.targetRoles.includes(role as any) || n.targetRoles.includes('any')));
+        const matchesEmployee = n.targetEmployeeId === employeeId || (n.targetEmployeeIds && n.targetEmployeeIds.includes(employeeId));
+        if (isGlobal || matchesRole || matchesEmployee) {
+          return { ...n, isRead: true };
+        }
+        return n;
+      })
+    }));
+    try {
+      await api.markAllNotificationsAsRead(companyId, employeeId, role);
+    } catch (e) {
+      console.error('Failed to mark all as read', e);
+    }
+  },
 
   setActiveEmployee: (id) => set({ activeEmployeeId: id }),
   addEmployee: (employee) => set((state) => ({ employees: [...state.employees, { ...employee, id: generateId('EMP'), status: 'active' }] })),
@@ -434,9 +467,40 @@ export const useDataStore = create<DataStore>((set, get) => ({
     }
   },
   deleteEmployee: (id) => set((state) => ({ employees: state.employees.filter(e => e.id !== id) })),
-  addWorkflow: (workflow) => set((state) => ({ workflows: [...state.workflows, { ...workflow, id: generateId('WF') }] })),
-  updateWorkflow: (id, data) => set((state) => ({ workflows: state.workflows.map(w => w.id === id ? { ...w, ...data } : w) })),
-  deleteWorkflow: (id) => set((state) => ({ workflows: state.workflows.filter(w => w.id !== id) })),
+  
+  addWorkflow: async (workflow) => {
+    const companyId = get().activeCompanyId;
+    if (!companyId) return;
+    const tempId = generateId('WF');
+    set((state) => ({ workflows: [...state.workflows, { ...workflow, id: tempId } as Workflow] }));
+    try {
+      const realWorkflow = await api.addWorkflow(companyId, workflow);
+      set((state) => ({
+        workflows: state.workflows.map(w => w.id === tempId ? { ...w, id: realWorkflow.id } : w)
+      }));
+    } catch (e) {
+      console.error('Failed to add workflow', e);
+      set((state) => ({ workflows: state.workflows.filter(w => w.id !== tempId) }));
+    }
+  },
+  
+  updateWorkflow: async (id, data) => {
+    set((state) => ({ workflows: state.workflows.map(w => w.id === id ? { ...w, ...data } : w) }));
+    try {
+      await api.updateWorkflow(id, data);
+    } catch (e) {
+      console.error('Failed to update workflow', e);
+    }
+  },
+  
+  deleteWorkflow: async (id) => {
+    set((state) => ({ workflows: state.workflows.filter(w => w.id !== id) }));
+    try {
+      await api.deleteWorkflow(id);
+    } catch (e) {
+      console.error('Failed to delete workflow', e);
+    }
+  },
 
   addClient: async (client) => {
     const companyId = get().activeCompanyId;

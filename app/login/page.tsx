@@ -1,13 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Building2, Mail, Lock, Loader2, ArrowRight, CheckCircle2, Receipt, FileText, PieChart } from 'lucide-react'
 import { Logo } from '@/components/ui/logo'
 
-export default function LoginPage() {
-  const [isSignUp, setIsSignUp] = useState(false)
+function LoginForm() {
+  const searchParams = useSearchParams()
+  const initialPlan = searchParams.get('plan') || 'gratuit'
+  
+  const [isSignUp, setIsSignUp] = useState(searchParams.has('plan')) // Auto-open signup if plan is selected
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
@@ -89,6 +92,7 @@ export default function LoginPage() {
           data: {
             full_name: fullName,
             company_name: companyName,
+            selected_plan: initialPlan,
           }
         }
       })
@@ -117,7 +121,7 @@ export default function LoginPage() {
     }
 
     router.refresh()
-    router.push('/')
+    router.push('/dashboard')
   }
 
   return (
@@ -323,5 +327,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen w-full flex items-center justify-center bg-white"><Loader2 className="w-10 h-10 animate-spin text-primary" /></div>}>
+      <LoginForm />
+    </Suspense>
   )
 }

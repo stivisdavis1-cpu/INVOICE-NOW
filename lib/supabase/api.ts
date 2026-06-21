@@ -1,16 +1,148 @@
 import { createClient } from './client'
-import { Client, Invoice, InvoiceLine, Payment, Settings } from '@/store/data-store'
+import { Client, Invoice, InvoiceLine, Payment, Settings, AppNotification, Workflow } from '@/store/data-store'
 
 export const api = {
-  // Workspaces
-  async getUserCompanies() {
+  // Workflows
+  async getWorkflows(companyId: string) {
     const supabase = createClient()
-    const { data, error } = await supabase.from('companies').select('*').order('name')
+    const { data, error } = await supabase.from('workflows').select('*').eq('company_id', companyId).order('created_at', { ascending: true })
+    if (error) throw error
+    return data.map((w: any) => ({
+      id: w.id,
+      name: w.name,
+      documentType: w.document_type,
+      steps: w.steps
+    }))
+  },
+  async addWorkflow(companyId: string, workflow: Omit<Workflow, 'id'>) {
+    const supabase = createClient()
+    const { data, error } = await supabase.from('workflows').insert({
+      company_id: companyId,
+      name: workflow.name,
+      document_type: workflow.documentType,
+      steps: workflow.steps
+    }).select().single()
+    if (error) throw error
+    return {
+      id: data.id,
+      name: data.name,
+      documentType: data.document_type,
+      steps: data.steps
+    }
+  },
+  async updateWorkflow(id: string, updates: Partial<Workflow>) {
+    const supabase = createClient()
+    const payload: any = {}
+    if (updates.name !== undefined) payload.name = updates.name
+    if (updates.documentType !== undefined) payload.document_type = updates.documentType
+    if (updates.steps !== undefined) payload.steps = updates.steps
+    
+    if (Object.keys(payload).length === 0) return null
+    
+    const { data, error } = await supabase.from('workflows').update(payload).eq('id', id).select().single()
     if (error) throw error
     return data
   },
+  async deleteWorkflow(id: string) {
+    const supabase = createClient()
+    const { error } = await supabase.from('workflows').delete().eq('id', id)
+    if (error) throw error
+  },
 
-  // Profiles
+  // Notifications
+  async getNotifications(companyId: string) {
+    const supabase = createClient()
+    const { data, error } = await supabase.from('notifications').select('*').eq('company_id', companyId).order('created_at', { ascending: false })
+    if (error) throw error
+    return data.map((n: any) => ({
+      id: n.id,
+      title: n.title,
+      message: n.message,
+      date: n.date,
+      isRead: n.is_read,
+      type: n.type,
+      targetRole: n.target_role,
+      targetRoles: n.target_roles,
+      targetEmployeeId: n.target_employee_id,
+      targetEmployeeIds: n.target_employee_ids,
+      link: n.link
+    }))
+  },
+  async addNotification(companyId: string, notification: Omit<AppNotification, 'id'>) {
+    const supabase = createClient()
+    const payload = {
+      company_id: companyId,
+      title: notification.title,
+      message: notification.message,
+      type: notification.type,
+      is_read: notification.isRead,
+      date: notification.date,
+      target_role: notification.targetRole,
+      target_roles: notification.targetRoles,
+      target_employee_id: notification.targetEmployeeId,
+      target_employee_ids: notification.targetEmployeeIds,
+      link: notification.link
+    }
+    const { data, error } = await supabase.from('notifications').insert(payload).select().single()
+    if (error) throw error
+    return {
+      ...notification,
+      id: data.id
+    }
+  },
+  async markNotificationAsRead(id: string) {
+    const supabase = createClient()
+    const { error } = await supabase.from('notifications').update({ is_read: true }).eq('id', id)
+    if (error) throw error
+  },
+  async markAllNotificationsAsRead(companyId: string, employeeId: string, role: string) {
+    // Due to array checking limitations in standard Supabase JS client update, we might do it in SQL or just fetch & update.
+    // However, updating all where is_read = false for the company is fine, 
+    // but ideally we only update those targeted at this user.
+    // For simplicity, we can fetch their unread ones, then update them.
+    const supabase = createClient()
+    const { data: unreadNotifs, error: getErr } = await supabase.from('notifications').select('id, target_role, target_roles, target_employee_id, target_employee_ids').eq('company_id', companyId).eq('is_read', false)
+    if (getErr) throw getErr
+    
+    if (!unreadNotifs || unreadNotifs.length === 0) return
+    
+    const idsToUpdate = unreadNotifs.filter((n: any) => {
+      const isGlobal = !n.target_role && !n.target_roles && !n.target_employee_id && !n.target_employee_ids;
+      const matchesRole = n.target_role === role || n.target_role === 'any' || (n.target_roles && (n.target_roles.includes(role) || n.target_roles.includes('any')));
+      const matchesEmployee = n.target_employee_id === employeeId || (n.target_employee_ids && n.target_employee_ids.includes(employeeId));
+      return isGlobal || matchesRole || matchesEmployee;
+    }).map((n: any) => n.id)
+    
+    if (idsToUpdate.length > 0) {
+      const { error: updErr } = await supabase.from('notifications').update({ is_read: true }).in('id', idsToUpdate)
+      if (updErr) throw updErr
+    }
+  },
+
+  // Workspaces
+  async getUserCompanies() {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+    
+    const { data, error } = await supabase
+      .from('company_users')
+      .select('company_id, role, status, companies(id, name, created_at)')
+      .eq('user_id', user.id)
+      
+    if (error) throw error
+    if (!data) return []
+    
+    return data
+      .filter((cu: any) => cu.companies !== null)
+      .map((cu: any) => ({
+        id: cu.companies.id,
+        name: cu.companies.name,
+        created_at: cu.companies.created_at,
+        role: cu.role,
+        status: cu.status
+      }))
+  },
   async getCurrentUserProfile() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -50,7 +182,7 @@ export const api = {
       return {
         id: cu.user_id,
         name: profile?.name || 'Inconnu',
-        email: profile?.email || '', // Note: profiles may not have email, but we map it safely
+        email: (profile as any)?.email || '', // Note: profiles may not have email, but we map it safely
         avatar: profile?.avatar || null,
         role: cu.role,
         status: cu.status

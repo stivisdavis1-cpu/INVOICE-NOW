@@ -207,6 +207,7 @@ export default function SettingsPage() {
   const updateWorkflow = useDataStore((state) => state.updateWorkflow);
   const deleteWorkflow = useDataStore((state) => state.deleteWorkflow);
   const updateEmployeeStatus = useDataStore((state) => state.updateEmployeeStatus);
+  const addEmployee = useDataStore((state) => state.addEmployee);
 
   const [newEmployee, setNewEmployee] = useState({ name: '', email: '', role: 'creator' as const, password: '' });
   const [pendingRoles, setPendingRoles] = useState<Record<string, 'admin' | 'manager' | 'accountant' | 'creator'>>({});
@@ -668,32 +669,40 @@ export default function SettingsPage() {
                         }}
                         className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 cursor-pointer"
                       >
-                        <option value="FCFA">Franc CFA (XOF / XAF)</option>
-                        <option value="€">Euro (€)</option>
-                        <option value="$">US Dollar ($)</option>
-                        <option value="MAD">Dirham Marocain (MAD)</option>
-                        <option value="GNF">Franc Guinéen (GNF)</option>
-                        <option value="CDF">Franc Congolais (CDF)</option>
-                        <option value="BIF">Franc Burundais (BIF)</option>
-                        <option value="RWF">Franc Rwandais (RWF)</option>
-                        <option value="KMF">Franc Comorien (KMF)</option>
-                        <option value="DJF">Franc Djibouti (DJF)</option>
-                        <option value="MGA">Ariary Malgache (MGA)</option>
-                        <option value="NGN">Naira (NGN)</option>
-                        <option value="GHS">Cedi (GHS)</option>
-                        <option value="KES">Shilling Kenyan (KES)</option>
-                        <option value="ZAR">Rand (ZAR)</option>
-                        <option value="DZD">Dinar Algérien (DZD)</option>
-                        <option value="TND">Dinar Tunisien (TND)</option>
-                        <option value="EGP">Livre Égyptienne (EGP)</option>
-                        <option value="MRU">Ouguiya (MRU)</option>
-                        <option value="£">Livre Sterling (£)</option>
-                        <option value="CAD">Dollar Canadien (CAD)</option>
-                        <option value="CHF">Franc Suisse (CHF)</option>
-                        <option value="¥">Yen / Yuan (¥)</option>
+                        <option value="FCFA (XOF)">Franc CFA (XOF - UEMOA: Sénégal, Côte d'Ivoire, Mali...)</option>
+                        <option value="FCFA (XAF)">Franc CFA (XAF - CEMAC: Cameroun, Gabon, Congo...)</option>
+                        <option value="€">Euro (€ - France, Belgique...)</option>
+                        <option value="$">US Dollar ($ - USA)</option>
+                        <option value="MAD">Dirham Marocain (MAD - Maroc)</option>
+                        <option value="DZD">Dinar Algérien (DZD - Algérie)</option>
+                        <option value="TND">Dinar Tunisien (TND - Tunisie)</option>
+                        <option value="GNF">Franc Guinéen (GNF - Guinée)</option>
+                        <option value="CDF">Franc Congolais (CDF - RDC)</option>
+                        <option value="BIF">Franc Burundais (BIF - Burundi)</option>
+                        <option value="RWF">Franc Rwandais (RWF - Rwanda)</option>
+                        <option value="KMF">Franc Comorien (KMF - Comores)</option>
+                        <option value="DJF">Franc Djibouti (DJF - Djibouti)</option>
+                        <option value="MGA">Ariary Malgache (MGA - Madagascar)</option>
+                        <option value="MRU">Ouguiya (MRU - Mauritanie)</option>
+                        <option value="NGN">Naira (NGN - Nigeria)</option>
+                        <option value="GHS">Cedi (GHS - Ghana)</option>
+                        <option value="KES">Shilling Kenyan (KES - Kenya)</option>
+                        <option value="UGX">Shilling Ougandais (UGX - Ouganda)</option>
+                        <option value="TZS">Shilling Tanzanien (TZS - Tanzanie)</option>
+                        <option value="ZAR">Rand (ZAR - Afrique du Sud)</option>
+                        <option value="EGP">Livre Égyptienne (EGP - Égypte)</option>
+                        <option value="SDG">Livre Soudanaise (SDG - Soudan)</option>
+                        <option value="AOA">Kwanza (AOA - Angola)</option>
+                        <option value="MZN">Metical (MZN - Mozambique)</option>
+                        <option value="BWP">Pula (BWP - Botswana)</option>
+                        <option value="ZMW">Kwacha (ZMW - Zambie)</option>
+                        <option value="£">Livre Sterling (£ - UK)</option>
+                        <option value="CAD">Dollar Canadien (CAD - Canada)</option>
+                        <option value="CHF">Franc Suisse (CHF - Suisse)</option>
+                        <option value="¥">Yen / Yuan (¥ - Japon/Chine)</option>
                         <option value="Autre">Autre (Personnaliser)</option>
                       </select>
-                      {!["FCFA", "€", "$", "MAD", "GNF", "CDF", "BIF", "RWF", "KMF", "DJF", "MGA", "NGN", "GHS", "KES", "ZAR", "DZD", "TND", "EGP", "MRU", "£", "CAD", "CHF", "¥"].includes(localSettings.currency || 'FCFA') && (
+                      {!["FCFA (XOF)", "FCFA (XAF)", "€", "$", "MAD", "DZD", "TND", "GNF", "CDF", "BIF", "RWF", "KMF", "DJF", "MGA", "MRU", "NGN", "GHS", "KES", "UGX", "TZS", "ZAR", "EGP", "SDG", "AOA", "MZN", "BWP", "ZMW", "£", "CAD", "CHF", "¥"].includes(localSettings.currency || 'FCFA (XOF)') && (
                         <input
                           type="text"
                           name="currency"
