@@ -715,42 +715,6 @@ export default function SettingsPage() {
                   <p className="text-gray-500 text-sm mt-1">Gérez les membres de votre équipe et leurs rôles dans le workflow.</p>
                 </div>
 
-                <div className={cn("bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-sm relative", !isPremiumOnly && employees.length >= 1 && "opacity-50 pointer-events-none")}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <h3 className="font-semibold text-gray-900">Ajouter un employé</h3>
-                    {!isPremiumOnly && employees.length >= 1 && <PremiumBadge />}
-                  </div>
-                  <form onSubmit={handleAddEmployee} className="flex flex-col sm:flex-row flex-wrap items-center gap-4">
-                    <input
-                      type="text"
-                      placeholder="Nom complet"
-                      value={newEmployee.name}
-                      onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
-                      className="flex-1 min-w-[150px] w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none"
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={newEmployee.email}
-                      onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
-                      className="flex-1 min-w-[150px] w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none"
-                    />
-                    {isAdmin && (
-                      <input
-                        type="password"
-                        placeholder="Mot de passe (optionnel)"
-                        value={newEmployee.password}
-                        onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
-                        className="flex-1 min-w-[150px] w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none"
-                      />
-                    )}
-
-                    <button type="submit" className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-xl font-medium transition-all shadow-md">
-                      Ajouter
-                    </button>
-                  </form>
-                </div>
-
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-4">Liste des employés</h3>
                   <div className="space-y-3">
