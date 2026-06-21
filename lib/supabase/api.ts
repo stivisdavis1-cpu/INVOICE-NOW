@@ -30,7 +30,7 @@ export const api = {
     const supabase = createClient()
     const { data: companyUsers, error } = await supabase
       .from('company_users')
-      .select('user_id, role')
+      .select('user_id, role, status')
       .eq('company_id', companyId)
       
     if (error) throw error
@@ -50,10 +50,22 @@ export const api = {
       return {
         id: cu.user_id,
         name: profile?.name || 'Inconnu',
+        email: profile?.email || '', // Note: profiles may not have email, but we map it safely
         avatar: profile?.avatar || null,
-        role: cu.role
+        role: cu.role,
+        status: cu.status
       }
     })
+  },
+
+  async updateEmployeeStatus(companyId: string, userId: string, status: 'active' | 'pending' | 'rejected') {
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('company_users')
+      .update({ status })
+      .match({ company_id: companyId, user_id: userId })
+
+    if (error) throw error
   },
 
   // Clients

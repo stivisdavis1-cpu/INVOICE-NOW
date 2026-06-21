@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Building2, Receipt, Bell, ShieldCheck, Save, FileText, Upload, Users, Plus, Trash2, Wand2, Settings2, Edit, Loader2 } from 'lucide-react';
+import { Building2, Receipt, Bell, ShieldCheck, Save, FileText, Upload, Users, Plus, Trash2, Wand2, Settings2, Edit, Loader2, Check, X } from 'lucide-react';
 
 import { AlertBuilderModal } from '@/components/settings/alert-builder-modal';
 import { CopyTemplateButton } from '@/components/ui/copy-template-button';
@@ -159,13 +159,11 @@ export default function SettingsPage() {
       setLocalSettings(prev => ({ ...prev, userName: activeEmployee.name.replace(/\s*\(.*?\)/g, '') }));
     }
   }, [activeEmployee?.name, localSettings.userName]);
-  
   const workflows = useDataStore((state) => state.workflows);
-  const addEmployee = useDataStore((state) => state.addEmployee);
-  const deleteEmployee = useDataStore((state) => state.deleteEmployee);
   const addWorkflow = useDataStore((state) => state.addWorkflow);
   const updateWorkflow = useDataStore((state) => state.updateWorkflow);
   const deleteWorkflow = useDataStore((state) => state.deleteWorkflow);
+  const updateEmployeeStatus = useDataStore((state) => state.updateEmployeeStatus);
 
   const [newEmployee, setNewEmployee] = useState({ name: '', email: '', role: 'creator' as const, password: '' });
 
@@ -718,7 +716,7 @@ export default function SettingsPage() {
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-4">Liste des employés</h3>
                   <div className="space-y-3">
-                    {employees.map(emp => (
+                    {employees.filter(e => e.status !== 'pending' && e.status !== 'rejected').map(emp => (
                       <div key={emp.id} className="flex items-center justify-between bg-white border border-gray-200 p-4 rounded-xl hover:shadow-sm transition-shadow">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
@@ -730,11 +728,55 @@ export default function SettingsPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
+                          <span className="text-sm text-gray-500 capitalize">{emp.role === 'admin' ? 'Administrateur' : 'Créateur'}</span>
                         </div>
                       </div>
                     ))}
+                    {employees.filter(e => e.status !== 'pending' && e.status !== 'rejected').length === 0 && (
+                      <p className="text-sm text-gray-500 italic">Aucun employé actif.</p>
+                    )}
                   </div>
                 </div>
+
+                {employees.filter(e => e.status === 'pending').length > 0 && (
+                  <div className="mt-8">
+                    <h3 className="font-semibold text-amber-600 mb-4 flex items-center gap-2">
+                      <ShieldCheck className="w-5 h-5" />
+                      Demandes d'accès en attente
+                    </h3>
+                    <div className="space-y-3">
+                      {employees.filter(e => e.status === 'pending').map(emp => (
+                        <div key={emp.id} className="flex items-center justify-between bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 font-bold">
+                              {emp.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{emp.name.replace(/\s*\(.*?\)/g, '')}</p>
+                              <p className="text-sm text-gray-500">Souhaite rejoindre votre entreprise</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <button 
+                              onClick={() => updateEmployeeStatus(emp.id, 'active')}
+                              className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors font-medium text-sm shadow-sm"
+                            >
+                              <Check className="w-4 h-4" />
+                              Accepter
+                            </button>
+                            <button 
+                              onClick={() => updateEmployeeStatus(emp.id, 'rejected')}
+                              className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-medium text-sm"
+                            >
+                              <X className="w-4 h-4" />
+                              Refuser
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="pt-8 border-t border-gray-100">
                   <div className={cn("mb-6 relative transition-opacity", !isPremiumOnly && "opacity-50 pointer-events-none")}>

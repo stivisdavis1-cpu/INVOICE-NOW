@@ -41,10 +41,11 @@ export type EmployeeRole = 'admin' | 'manager' | 'accountant' | 'creator';
 export interface Employee {
   id: string;
   name: string;
-  email?: string;
+  email: string;
   role: EmployeeRole;
   avatar?: string;
   password?: string;
+  status?: 'active' | 'pending' | 'rejected';
 }
 
 export interface WorkflowStep {
@@ -181,6 +182,7 @@ interface DataStore {
   setActiveEmployee: (id: string | null) => void;
   addEmployee: (employee: Omit<Employee, 'id'>) => void;
   updateEmployee: (id: string, data: Partial<Employee>) => void;
+  updateEmployeeStatus: (id: string, status: 'active' | 'pending' | 'rejected') => Promise<void>;
   deleteEmployee: (id: string) => void;
   addWorkflow: (workflow: Omit<Workflow, 'id'>) => void;
   updateWorkflow: (id: string, data: Partial<Workflow>) => void;
@@ -405,8 +407,21 @@ export const useDataStore = create<DataStore>((set, get) => ({
   })),
 
   setActiveEmployee: (id) => set({ activeEmployeeId: id }),
-  addEmployee: (employee) => set((state) => ({ employees: [...state.employees, { ...employee, id: generateId('EMP') }] })),
+  addEmployee: (employee) => set((state) => ({ employees: [...state.employees, { ...employee, id: generateId('EMP'), status: 'active' }] })),
   updateEmployee: (id, data) => set((state) => ({ employees: state.employees.map(e => e.id === id ? { ...e, ...data } : e) })),
+  updateEmployeeStatus: async (id, status) => {
+    const { activeCompanyId } = get();
+    if (!activeCompanyId) return;
+    try {
+      await api.updateEmployeeStatus(activeCompanyId, id, status);
+      set((state) => ({
+        employees: state.employees.map(e => e.id === id ? { ...e, status } : e)
+      }));
+    } catch (error) {
+      console.error("Failed to update employee status:", error);
+      throw error;
+    }
+  },
   deleteEmployee: (id) => set((state) => ({ employees: state.employees.filter(e => e.id !== id) })),
   addWorkflow: (workflow) => set((state) => ({ workflows: [...state.workflows, { ...workflow, id: generateId('WF') }] })),
   updateWorkflow: (id, data) => set((state) => ({ workflows: state.workflows.map(w => w.id === id ? { ...w, ...data } : w) })),
