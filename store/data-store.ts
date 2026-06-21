@@ -50,7 +50,7 @@ export interface Employee {
 export interface WorkflowStep {
   id: string;
   name: string;
-  requiredRole: EmployeeRole | 'any';
+  requiredRole: string; // "any" or Employee ID
   actionLabel: string;
   isFinal?: boolean;
 }

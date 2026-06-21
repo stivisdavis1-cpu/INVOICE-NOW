@@ -847,7 +847,7 @@ export default function SettingsPage() {
                                     <p className="text-sm font-bold text-gray-900">{step.name}</p>
                                     <div className="mt-2 flex items-center gap-1.5">
                                       <span className="w-2 h-2 rounded-full bg-primary/50"></span>
-                                      <p className="text-xs text-gray-600 font-medium">{step.requiredRole === 'any' ? 'N\'importe qui' : step.requiredRole}</p>
+                                      <p className="text-xs text-gray-600 font-medium">{step.requiredRole === 'any' ? 'N\'importe qui' : (employees.find(e => e.id === step.requiredRole)?.name || step.requiredRole)}</p>
                                     </div>
                                     <div className="mt-2 pt-2 border-t border-gray-100">
                                       <p className="text-[11px] text-gray-400">Action: {step.actionLabel}</p>
@@ -1220,17 +1220,16 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Rôle Requis</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Utilisateur Requis</label>
                 <select 
                   value={stepModalData.requiredRole}
                   onChange={(e) => setStepModalData({ ...stepModalData, requiredRole: e.target.value })}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none"
                 >
                   <option value="any">N'importe qui</option>
-                  <option value="creator">Créateur</option>
-                  <option value="manager">Manager</option>
-                  <option value="accountant">Comptable</option>
-                  <option value="admin">Administrateur</option>
+                  {employees.map(emp => (
+                    <option key={emp.id} value={emp.id}>{emp.name} ({emp.role})</option>
+                  ))}
                 </select>
               </div>
               <div>

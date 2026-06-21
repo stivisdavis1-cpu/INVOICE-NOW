@@ -122,7 +122,7 @@ export default function InvoiceDetailPage() {
               return (
                 <p className="text-sm text-primary/80 mt-1">
                   Étape actuelle : <span className="font-semibold">{step.name}</span> 
-                  (Requis : {step.requiredRole})
+                  (Requis : {step.requiredRole === 'any' ? "N'importe qui" : (employees.find(e => e.id === step.requiredRole)?.name || step.requiredRole)})
                 </p>
               );
             })()}
@@ -133,7 +133,7 @@ export default function InvoiceDetailPage() {
             const stepIndex = wf?.steps.findIndex(s => s.id === invoice.currentStepId) ?? -1;
             const step = wf?.steps[stepIndex];
             const activeEmployee = employees.find(e => e.id === activeEmployeeId);
-            const isAllowed = step && activeEmployee && (step.requiredRole === 'any' || step.requiredRole === activeEmployee.role);
+            const isAllowed = step && activeEmployee && (step.requiredRole === 'any' || step.requiredRole === activeEmployee.id);
 
             if (!wf || !step || !isAllowed) return null;
 
@@ -147,7 +147,8 @@ export default function InvoiceDetailPage() {
                       title: `Document en attente de validation`,
                       message: `Le document ${invoice.number} nécessite votre validation (Étape: ${nextStep.name}).`,
                       type: 'warning',
-                      targetRole: nextStep.requiredRole,
+                      targetEmployeeId: nextStep.requiredRole !== 'any' ? nextStep.requiredRole : undefined,
+                      targetRole: nextStep.requiredRole === 'any' ? 'any' : undefined,
                       link: `/invoices/${invoice.id}`
                     });
                   } else {
