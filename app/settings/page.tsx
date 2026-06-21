@@ -572,16 +572,39 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <label className="block text-[13px] font-medium text-gray-700 mb-1.5">{t('settings.currency')}</label>
-                    <select
+                    <input
+                      list="currency-options"
                       name="currency"
                       value={localSettings.currency}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 appearance-none"
-                    >
-                      <option value="XOF">Franc CFA (XOF)</option>
-                      <option value="EUR">Euro (€)</option>
-                      <option value="USD">Dollar ($)</option>
-                    </select>
+                      placeholder="ex: FCFA, €, $, MAD, XAF..."
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300"
+                    />
+                    <datalist id="currency-options">
+                      <option value="FCFA">Franc CFA (XOF / XAF)</option>
+                      <option value="€">Euro (EUR)</option>
+                      <option value="$">US Dollar (USD)</option>
+                      <option value="MAD">Dirham Marocain (MAD)</option>
+                      <option value="GNF">Franc Guinéen (GNF)</option>
+                      <option value="CDF">Franc Congolais (CDF)</option>
+                      <option value="BIF">Franc Burundais (BIF)</option>
+                      <option value="RWF">Franc Rwandais (RWF)</option>
+                      <option value="KMF">Franc Comorien (KMF)</option>
+                      <option value="DJF">Franc Djibouti (DJF)</option>
+                      <option value="MGA">Ariary Malgache (MGA)</option>
+                      <option value="NGN">Naira (NGN)</option>
+                      <option value="GHS">Cedi (GHS)</option>
+                      <option value="KES">Shilling Kenyan (KES)</option>
+                      <option value="ZAR">Rand (ZAR)</option>
+                      <option value="DZD">Dinar Algérien (DZD)</option>
+                      <option value="TND">Dinar Tunisien (TND)</option>
+                      <option value="EGP">Livre Égyptienne (EGP)</option>
+                      <option value="MRU">Ouguiya (MRU)</option>
+                      <option value="£">Livre Sterling (GBP)</option>
+                      <option value="CAD">Dollar Canadien (CAD)</option>
+                      <option value="CHF">Franc Suisse (CHF)</option>
+                      <option value="¥">Yen / Yuan</option>
+                    </datalist>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-[13px] font-medium text-gray-700 mb-1.5">{t('settings.footerMentions')}</label>

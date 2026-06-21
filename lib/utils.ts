@@ -15,17 +15,25 @@ export const formatCFA = (amount: number, compact: boolean = false): string => {
   const lang = useI18nStore.getState().language;
   const locale = lang === 'en' ? 'en-US' : 'fr-FR';
   
+  let currencyStr = 'FCFA';
+  try {
+    const storeCurrency = useDataStore.getState().settings?.currency;
+    if (storeCurrency) currencyStr = storeCurrency;
+  } catch (e) {
+    // ignore
+  }
+  
   if (compact && safeAmount >= 1000) {
     return new Intl.NumberFormat(locale, {
       notation: 'compact',
       maximumFractionDigits: 1,
-    }).format(safeAmount) + ' FCFA';
+    }).format(safeAmount) + ' ' + currencyStr;
   }
 
   return new Intl.NumberFormat(locale, {
     style: 'decimal',
     minimumFractionDigits: 0,
-  }).format(Math.round(safeAmount)) + ' FCFA';
+  }).format(Math.round(safeAmount)) + ' ' + currencyStr;
 };
 
 export const numberToWordsCFA = (amount: number): string => {
@@ -33,7 +41,14 @@ export const numberToWordsCFA = (amount: number): string => {
     const lang = useI18nStore.getState().language;
     writtenNumber.defaults.lang = lang;
     const words = writtenNumber(Math.round(amount));
-    const currency = lang === 'en' ? 'CFA francs' : 'francs CFA';
+    
+    let currencyStr = 'FCFA';
+    try {
+      const storeCurrency = useDataStore.getState().settings?.currency;
+      if (storeCurrency) currencyStr = storeCurrency;
+    } catch (e) { }
+
+    const currency = currencyStr === 'FCFA' ? (lang === 'en' ? 'CFA francs' : 'francs CFA') : currencyStr;
     return `${words.charAt(0).toUpperCase() + words.slice(1)} ${currency}`;
   } catch (e) {
     return `${formatCFA(amount)}`; // fallback
