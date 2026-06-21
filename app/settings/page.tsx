@@ -744,16 +744,7 @@ export default function SettingsPage() {
                         className="flex-1 min-w-[150px] w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none"
                       />
                     )}
-                    <select
-                      value={newEmployee.role}
-                      onChange={(e) => setNewEmployee({ ...newEmployee, role: e.target.value as any })}
-                      className="flex-1 min-w-[140px] w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none"
-                    >
-                      <option value="creator">Créateur</option>
-                      <option value="manager">Manager</option>
-                      <option value="accountant">Comptable</option>
-                      <option value="admin">Administrateur</option>
-                    </select>
+
                     <button type="submit" className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-xl font-medium transition-all shadow-md">
                       Ajouter
                     </button>
@@ -775,9 +766,7 @@ export default function SettingsPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium uppercase">
-                            {emp.role}
-                          </span>
+
                           <button onClick={() => deleteEmployee(emp.id)} className="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-xl transition-colors">
                             <Trash2 className="w-4 h-4" />
                           </button>
