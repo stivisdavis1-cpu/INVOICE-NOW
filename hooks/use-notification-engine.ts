@@ -6,6 +6,7 @@ export function useNotificationEngine() {
   const settings = useDataStore((state) => state.settings);
   const addNotification = useDataStore((state) => state.addNotification);
   const notifications = useDataStore((state) => state.notifications);
+  const workflows = useDataStore((state) => state.workflows);
 
   useEffect(() => {
     // Only run if there are invoices to process
@@ -16,8 +17,32 @@ export function useNotificationEngine() {
     // Process all active alerts
     if (!settings.alerts) return;
 
+    const getInvoiceTargets = (inv: any) => {
+      let roles: any[] = [];
+      let ids: string[] = [];
+      if (inv.workflowId) {
+        const wf = workflows.find((w: any) => w.id === inv.workflowId);
+        if (wf) {
+          wf.steps.forEach((s: any) => {
+            if (s.requiredRole !== 'any') roles.push(s.requiredRole);
+          });
+        }
+        if (roles.length > 0) roles.push('admin'); // Admins always see workflow docs
+      }
+      
+      const historyCreation = inv.history?.find((h: any) => h.action === 'created');
+      if (historyCreation?.employeeId) {
+        ids.push(historyCreation.employeeId);
+      }
+      
+      return { 
+        targetRoles: roles.length > 0 ? [...new Set(roles)] : undefined, 
+        targetEmployeeIds: ids.length > 0 ? [...new Set(ids)] : undefined 
+      };
+    };
+
     settings.alerts.filter(a => a.isActive).forEach(alert => {
-      // 1. Before Due (Relance Automatique and Custom Before Due)
+      // 1. Before Due
       if (alert.triggerEvent === 'before_due') {
         const offset = Math.abs(alert.triggerDaysOffset || 0);
         invoices.forEach(inv => {
@@ -31,11 +56,13 @@ export function useNotificationEngine() {
                 n.message.includes(inv.number || inv.id) && n.title === alert.name
               );
               if (!alreadyNotified) {
+                const targets = getInvoiceTargets(inv);
                 addNotification({
                   title: alert.name,
                   message: `Alerte (${alert.name}) : La facture ${inv.number || 'Brouillon'} arrive à échéance dans ${offset} jours.`,
                   type: 'warning',
-                  link: `/invoices/${inv.id}`
+                  link: `/invoices/${inv.id}`,
+                  ...targets
                 });
               }
             }
@@ -43,7 +70,7 @@ export function useNotificationEngine() {
         });
       }
 
-      // 2. After Due (Alerte de Retard and Custom After Due)
+      // 2. After Due
       if (alert.triggerEvent === 'after_due') {
         const offset = Math.abs(alert.triggerDaysOffset || 0);
         invoices.forEach(inv => {
@@ -53,20 +80,21 @@ export function useNotificationEngine() {
             dueDate.setHours(0,0,0,0);
             todayDate.setHours(0,0,0,0);
             
-            // Calculate days after due
             const diffTime = todayDate.getTime() - dueDate.getTime();
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-            if (diffDays >= offset) { // It has been at least `offset` days since due
+            if (diffDays >= offset) {
               const alreadyNotified = notifications.some(n => 
                  n.message.includes(inv.number || inv.id) && n.title === alert.name
               );
               if (!alreadyNotified) {
+                const targets = getInvoiceTargets(inv);
                 addNotification({
                    title: alert.name,
                    message: `Alerte (${alert.name}) : La facture ${inv.number || 'Brouillon'} a dépassé son échéance de ${diffDays} jours.`,
                    type: 'warning',
-                   link: `/invoices/${inv.id}`
+                   link: `/invoices/${inv.id}`,
+                   ...targets
                 });
               }
             }
@@ -88,12 +116,13 @@ export function useNotificationEngine() {
                 title: alert.name,
                 message: alert.description || `Votre résumé financier pour le mois de ${monthName} est prêt.`,
                 type: 'info',
-                link: '/reports'
+                link: '/reports',
+                targetRoles: ['admin', 'manager']
              });
            }
          }
       }
     });
 
-  }, [invoices, settings, addNotification, notifications]); // Dependencies ensure it runs when state changes
+  }, [invoices, settings, addNotification, notifications, workflows]); // Dependencies ensure it runs when state changes
 }

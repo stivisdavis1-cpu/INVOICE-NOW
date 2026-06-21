@@ -77,7 +77,9 @@ export interface AppNotification {
   isRead: boolean;
   type: NotificationType;
   targetRole?: EmployeeRole | 'any';
+  targetRoles?: (EmployeeRole | 'any')[];
   targetEmployeeId?: string;
+  targetEmployeeIds?: string[];
   link?: string;
 }
 
@@ -403,11 +405,16 @@ export const useDataStore = create<DataStore>((set, get) => ({
   })),
 
   markAllAsRead: (employeeId, role) => set((state) => ({
-    notifications: state.notifications.map(n => 
-      (n.targetEmployeeId === employeeId || n.targetRole === role || n.targetRole === 'any')
-        ? { ...n, isRead: true } 
-        : n
-    )
+    notifications: state.notifications.map(n => {
+      const isGlobal = !n.targetRole && !n.targetRoles && !n.targetEmployeeId && !n.targetEmployeeIds;
+      const matchesRole = n.targetRole === role || n.targetRole === 'any' || (n.targetRoles && (n.targetRoles.includes(role) || n.targetRoles.includes('any')));
+      const matchesEmployee = n.targetEmployeeId === employeeId || (n.targetEmployeeIds && n.targetEmployeeIds.includes(employeeId));
+      
+      if (isGlobal || matchesRole || matchesEmployee) {
+        return { ...n, isRead: true };
+      }
+      return n;
+    })
   })),
 
   setActiveEmployee: (id) => set({ activeEmployeeId: id }),

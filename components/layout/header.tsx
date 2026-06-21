@@ -37,9 +37,16 @@ export function Header() {
   // Filter notifications for active employee
   const myNotifications = notifications.filter(n => {
     if (!activeEmployee) return false;
-    return n.targetEmployeeId === activeEmployee.id || 
-           n.targetRole === activeEmployee.role || 
-           n.targetRole === 'any';
+    
+    // Si c'est une notification générique (sans cible spécifique) -> on l'affiche si c'est pas restreint
+    if (!n.targetRole && !n.targetRoles && !n.targetEmployeeId && !n.targetEmployeeIds) {
+      return true; // Notification globale
+    }
+
+    const matchesRole = n.targetRole === activeEmployee.role || n.targetRole === 'any' || (n.targetRoles && (n.targetRoles.includes(activeEmployee.role) || n.targetRoles.includes('any')));
+    const matchesEmployee = n.targetEmployeeId === activeEmployee.id || (n.targetEmployeeIds && n.targetEmployeeIds.includes(activeEmployee.id));
+
+    return matchesRole || matchesEmployee;
   });
 
   const unreadCount = myNotifications.filter(n => !n.isRead).length;
