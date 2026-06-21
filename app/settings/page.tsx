@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Building2, Receipt, Bell, ShieldCheck, Save, FileText, Upload, Users, Plus, Trash2, Wand2, Settings2, Edit, Loader2, Check, X } from 'lucide-react';
+import { Building2, Receipt, Bell, BellRing, ShieldCheck, Save, FileText, Upload, Users, Plus, Trash2, Wand2, Settings2, Edit, Loader2, Check, X } from 'lucide-react';
 
 import { AlertBuilderModal } from '@/components/settings/alert-builder-modal';
 import { CopyTemplateButton } from '@/components/ui/copy-template-button';
@@ -18,6 +18,7 @@ const PremiumBadge = () => (
 import { cn } from '@/lib/utils';
 import { useDataStore, Settings } from '@/store/data-store';
 import { useTranslation } from '@/hooks/use-translation';
+import { useToastStore } from '@/store/toast-store';
 
 const IntermediateBadge = () => (
   <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1 shrink-0">
@@ -32,6 +33,48 @@ export default function SettingsPage() {
   const updateSettings = useDataStore((state) => state.updateSettings);
   const { t } = useTranslation();
   const [alertToDelete, setAlertToDelete] = useState<string | null>(null);
+  const addToast = useToastStore((state) => state.addToast);
+  const addNotification = useDataStore((state) => state.addNotification);
+
+  const handleTestAlert = (alert: any) => {
+    if (alert.type === 'email') {
+      addToast({
+        title: "Simulation d'Email",
+        message: `Un email avec l'objet "${alert.subjectTemplate || alert.name}" aurait été envoyé !`,
+        type: "success"
+      });
+      addNotification({
+        title: `Test Email : ${alert.name}`,
+        message: `Ceci est un test de votre alerte configurée par email.`,
+        type: 'info'
+      });
+    } else {
+      addToast({
+        title: `Notification In-App : ${alert.name}`,
+        message: "Ceci est un test de votre notification interne.",
+        type: "info"
+      });
+      addNotification({
+        title: `Test In-App : ${alert.name}`,
+        message: alert.description || `Ceci est un test de votre alerte In-App.`,
+        type: 'info'
+      });
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(`Test : ${alert.name}`, {
+          body: "Votre notification In-App s'affiche correctement sur votre navigateur !",
+          icon: "/favicon.ico"
+        });
+      } else if ("Notification" in window && Notification.permission !== "denied") {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            new Notification(`Test : ${alert.name}`, {
+              body: "Votre notification In-App s'affiche correctement sur votre navigateur !"
+            });
+          }
+        });
+      }
+    }
+  };
 
   const [localSettings, setLocalSettings] = useState<Settings>(settings);
   const [isSaved, setIsSaved] = useState(false);
@@ -1045,6 +1088,15 @@ export default function SettingsPage() {
                         <p className="text-gray-500 text-sm mt-0.5">{alert.description || alert.subjectTemplate || 'Alerte personnalisée'}</p>
                       </div>
                       <div className="flex items-center gap-4">
+                        <button 
+                          onClick={() => handleTestAlert(alert)}
+                          className={cn(
+                            "p-2 rounded-xl transition-colors text-blue-500 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
+                          )}
+                          title="Tester l'alerte"
+                        >
+                          <BellRing className="w-5 h-5" />
+                        </button>
                         <button 
                           onClick={() => {
                             setEditingAlertId(alert.id);
