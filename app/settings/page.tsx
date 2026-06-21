@@ -369,34 +369,52 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <input
-                        list="tax-id-labels"
+                    <div className="flex flex-col gap-2 mb-1.5">
+                      <select
                         name="nineaLabel"
-                        value={localSettings.nineaLabel || 'NINEA'}
-                        onChange={handleChange}
-                        className="text-[13px] font-bold text-gray-900 bg-transparent border-b border-dashed border-gray-300 focus:border-primary outline-none hover:bg-gray-50 px-1 py-0.5 max-w-[200px]"
-                        title="Modifiez ce libellé selon votre pays"
-                      />
-                      <datalist id="tax-id-labels">
-                        <option value="NINEA">Sénégal</option>
-                        <option value="NIU">Cameroun, Congo</option>
-                        <option value="NCC">Côte d'Ivoire</option>
-                        <option value="IFU">Bénin, Burkina Faso</option>
-                        <option value="NIF">Togo, Guinée, Mali, Niger, Tchad, Gabon, Mauritanie, Madagascar, Burundi, Djibouti, RCA, Comores, Algérie</option>
-                        <option value="ID. NAT.">RDC</option>
-                        <option value="ICE">Maroc</option>
-                        <option value="Matricule Fiscal">Tunisie</option>
-                        <option value="TIN">Rwanda, Nigeria, Ghana, Ouganda, Tanzanie, Egypte</option>
-                        <option value="PIN">Kenya</option>
-                        <option value="VAT Number">Afrique du Sud, UK</option>
-                        <option value="SIRET">France</option>
-                        <option value="Numéro d'entreprise">Belgique</option>
-                        <option value="IDE">Suisse</option>
-                        <option value="NE">Canada</option>
-                        <option value="EIN">USA</option>
-                        <option value="Numéro Fiscal">Générique</option>
-                      </datalist>
+                        value={
+                          ["NINEA", "NIU", "NCC", "IFU", "NIF", "ID. NAT.", "ICE", "Matricule Fiscal", "TIN", "PIN", "VAT Number", "SIRET", "Numéro d'entreprise", "IDE", "NE", "EIN", "Numéro Fiscal"].includes(localSettings.nineaLabel || 'NINEA')
+                            ? (localSettings.nineaLabel || 'NINEA')
+                            : "Autre"
+                        }
+                        onChange={(e) => {
+                          if (e.target.value === "Autre") {
+                            handleChange({ target: { name: "nineaLabel", value: "" } } as any);
+                          } else {
+                            handleChange(e);
+                          }
+                        }}
+                        className="text-[13px] font-bold text-gray-900 bg-transparent border-b border-dashed border-gray-300 focus:border-primary outline-none hover:bg-gray-50 px-1 py-0.5 cursor-pointer max-w-fit"
+                      >
+                        <option value="NINEA">NINEA (Sénégal)</option>
+                        <option value="NIU">NIU (Cameroun, Congo)</option>
+                        <option value="NCC">NCC (Côte d'Ivoire)</option>
+                        <option value="IFU">IFU (Bénin, Burkina Faso)</option>
+                        <option value="NIF">NIF (Togo, Guinée, Mali, Niger, etc.)</option>
+                        <option value="ID. NAT.">ID. NAT. (RDC)</option>
+                        <option value="ICE">ICE (Maroc)</option>
+                        <option value="Matricule Fiscal">Matricule Fiscal (Tunisie)</option>
+                        <option value="TIN">TIN (Rwanda, Nigeria, Ghana, etc.)</option>
+                        <option value="PIN">PIN (Kenya)</option>
+                        <option value="VAT Number">VAT Number (Afrique du Sud, UK)</option>
+                        <option value="SIRET">SIRET (France)</option>
+                        <option value="Numéro d'entreprise">Numéro d'entreprise (Belgique)</option>
+                        <option value="IDE">IDE (Suisse)</option>
+                        <option value="NE">NE (Canada)</option>
+                        <option value="EIN">EIN (USA)</option>
+                        <option value="Numéro Fiscal">Numéro Fiscal (Générique)</option>
+                        <option value="Autre">Autre (Personnaliser)</option>
+                      </select>
+                      {!["NINEA", "NIU", "NCC", "IFU", "NIF", "ID. NAT.", "ICE", "Matricule Fiscal", "TIN", "PIN", "VAT Number", "SIRET", "Numéro d'entreprise", "IDE", "NE", "EIN", "Numéro Fiscal"].includes(localSettings.nineaLabel || 'NINEA') && (
+                        <input
+                          type="text"
+                          name="nineaLabel"
+                          value={localSettings.nineaLabel}
+                          onChange={handleChange}
+                          placeholder="Saisissez votre libellé personnalisé..."
+                          className="w-full px-3 py-2 bg-white border border-primary/30 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 outline-none"
+                        />
+                      )}
                     </div>
                     <input
                       type="text"
@@ -407,30 +425,48 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <input
-                        list="company-id-labels"
+                    <div className="flex flex-col gap-2 mb-1.5">
+                      <select
                         name="rccmLabel"
-                        value={localSettings.rccmLabel || 'RCCM'}
-                        onChange={handleChange}
-                        className="text-[13px] font-bold text-gray-900 bg-transparent border-b border-dashed border-gray-300 focus:border-primary outline-none hover:bg-gray-50 px-1 py-0.5 max-w-[200px]"
-                        title="Modifiez ce libellé selon votre pays"
-                      />
-                      <datalist id="company-id-labels">
-                        <option value="RCCM">Espace OHADA (Sénégal, CI, Cameroun, Bénin, Togo, etc.)</option>
-                        <option value="RC">Maroc, Algérie, Tunisie, Burundi</option>
-                        <option value="RCS">France, Madagascar</option>
-                        <option value="Company Code">Rwanda</option>
-                        <option value="CIPC Number">Afrique du Sud</option>
-                        <option value="RC Number">Nigeria (CAC)</option>
-                        <option value="Registration Number">Ghana, Kenya</option>
-                        <option value="Numéro BCE">Belgique</option>
-                        <option value="CH-ID">Suisse</option>
-                        <option value="Numéro de constitution">Canada</option>
-                        <option value="State File Number">USA</option>
-                        <option value="CRN">UK</option>
-                        <option value="Registre de Commerce">Générique</option>
-                      </datalist>
+                        value={
+                          ["RCCM", "RC", "RCS", "Company Code", "CIPC Number", "RC Number", "Registration Number", "Numéro BCE", "CH-ID", "Numéro de constitution", "State File Number", "CRN", "Registre de Commerce"].includes(localSettings.rccmLabel || 'RCCM')
+                            ? (localSettings.rccmLabel || 'RCCM')
+                            : "Autre"
+                        }
+                        onChange={(e) => {
+                          if (e.target.value === "Autre") {
+                            handleChange({ target: { name: "rccmLabel", value: "" } } as any);
+                          } else {
+                            handleChange(e);
+                          }
+                        }}
+                        className="text-[13px] font-bold text-gray-900 bg-transparent border-b border-dashed border-gray-300 focus:border-primary outline-none hover:bg-gray-50 px-1 py-0.5 cursor-pointer max-w-fit"
+                      >
+                        <option value="RCCM">RCCM (Espace OHADA)</option>
+                        <option value="RC">RC (Maroc, Algérie, Tunisie, Burundi)</option>
+                        <option value="RCS">RCS (France, Madagascar)</option>
+                        <option value="Company Code">Company Code (Rwanda)</option>
+                        <option value="CIPC Number">CIPC Number (Afrique du Sud)</option>
+                        <option value="RC Number">RC Number (Nigeria CAC)</option>
+                        <option value="Registration Number">Registration Number (Ghana, Kenya)</option>
+                        <option value="Numéro BCE">Numéro BCE (Belgique)</option>
+                        <option value="CH-ID">CH-ID (Suisse)</option>
+                        <option value="Numéro de constitution">Numéro de constitution (Canada)</option>
+                        <option value="State File Number">State File Number (USA)</option>
+                        <option value="CRN">CRN (UK)</option>
+                        <option value="Registre de Commerce">Registre de Commerce (Générique)</option>
+                        <option value="Autre">Autre (Personnaliser)</option>
+                      </select>
+                      {!["RCCM", "RC", "RCS", "Company Code", "CIPC Number", "RC Number", "Registration Number", "Numéro BCE", "CH-ID", "Numéro de constitution", "State File Number", "CRN", "Registre de Commerce"].includes(localSettings.rccmLabel || 'RCCM') && (
+                        <input
+                          type="text"
+                          name="rccmLabel"
+                          value={localSettings.rccmLabel}
+                          onChange={handleChange}
+                          placeholder="Saisissez votre libellé personnalisé..."
+                          className="w-full px-3 py-2 bg-white border border-primary/30 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 outline-none"
+                        />
+                      )}
                     </div>
                     <input
                       type="text"
@@ -571,40 +607,60 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[13px] font-medium text-gray-700 mb-1.5">{t('settings.currency')}</label>
-                    <input
-                      list="currency-options"
-                      name="currency"
-                      value={localSettings.currency}
-                      onChange={handleChange}
-                      placeholder="ex: FCFA, €, $, MAD, XAF..."
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300"
-                    />
-                    <datalist id="currency-options">
-                      <option value="FCFA">Franc CFA (XOF / XAF)</option>
-                      <option value="€">Euro (EUR)</option>
-                      <option value="$">US Dollar (USD)</option>
-                      <option value="MAD">Dirham Marocain (MAD)</option>
-                      <option value="GNF">Franc Guinéen (GNF)</option>
-                      <option value="CDF">Franc Congolais (CDF)</option>
-                      <option value="BIF">Franc Burundais (BIF)</option>
-                      <option value="RWF">Franc Rwandais (RWF)</option>
-                      <option value="KMF">Franc Comorien (KMF)</option>
-                      <option value="DJF">Franc Djibouti (DJF)</option>
-                      <option value="MGA">Ariary Malgache (MGA)</option>
-                      <option value="NGN">Naira (NGN)</option>
-                      <option value="GHS">Cedi (GHS)</option>
-                      <option value="KES">Shilling Kenyan (KES)</option>
-                      <option value="ZAR">Rand (ZAR)</option>
-                      <option value="DZD">Dinar Algérien (DZD)</option>
-                      <option value="TND">Dinar Tunisien (TND)</option>
-                      <option value="EGP">Livre Égyptienne (EGP)</option>
-                      <option value="MRU">Ouguiya (MRU)</option>
-                      <option value="£">Livre Sterling (GBP)</option>
-                      <option value="CAD">Dollar Canadien (CAD)</option>
-                      <option value="CHF">Franc Suisse (CHF)</option>
-                      <option value="¥">Yen / Yuan</option>
-                    </datalist>
+                    <div className="flex flex-col gap-2 mb-1.5">
+                      <label className="block text-[13px] font-medium text-gray-700">{t('settings.currency')}</label>
+                      <select
+                        name="currency"
+                        value={
+                          ["FCFA", "€", "$", "MAD", "GNF", "CDF", "BIF", "RWF", "KMF", "DJF", "MGA", "NGN", "GHS", "KES", "ZAR", "DZD", "TND", "EGP", "MRU", "£", "CAD", "CHF", "¥"].includes(localSettings.currency || 'FCFA')
+                            ? (localSettings.currency || 'FCFA')
+                            : "Autre"
+                        }
+                        onChange={(e) => {
+                          if (e.target.value === "Autre") {
+                            handleChange({ target: { name: "currency", value: "" } } as any);
+                          } else {
+                            handleChange(e);
+                          }
+                        }}
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 cursor-pointer"
+                      >
+                        <option value="FCFA">Franc CFA (XOF / XAF)</option>
+                        <option value="€">Euro (€)</option>
+                        <option value="$">US Dollar ($)</option>
+                        <option value="MAD">Dirham Marocain (MAD)</option>
+                        <option value="GNF">Franc Guinéen (GNF)</option>
+                        <option value="CDF">Franc Congolais (CDF)</option>
+                        <option value="BIF">Franc Burundais (BIF)</option>
+                        <option value="RWF">Franc Rwandais (RWF)</option>
+                        <option value="KMF">Franc Comorien (KMF)</option>
+                        <option value="DJF">Franc Djibouti (DJF)</option>
+                        <option value="MGA">Ariary Malgache (MGA)</option>
+                        <option value="NGN">Naira (NGN)</option>
+                        <option value="GHS">Cedi (GHS)</option>
+                        <option value="KES">Shilling Kenyan (KES)</option>
+                        <option value="ZAR">Rand (ZAR)</option>
+                        <option value="DZD">Dinar Algérien (DZD)</option>
+                        <option value="TND">Dinar Tunisien (TND)</option>
+                        <option value="EGP">Livre Égyptienne (EGP)</option>
+                        <option value="MRU">Ouguiya (MRU)</option>
+                        <option value="£">Livre Sterling (£)</option>
+                        <option value="CAD">Dollar Canadien (CAD)</option>
+                        <option value="CHF">Franc Suisse (CHF)</option>
+                        <option value="¥">Yen / Yuan (¥)</option>
+                        <option value="Autre">Autre (Personnaliser)</option>
+                      </select>
+                      {!["FCFA", "€", "$", "MAD", "GNF", "CDF", "BIF", "RWF", "KMF", "DJF", "MGA", "NGN", "GHS", "KES", "ZAR", "DZD", "TND", "EGP", "MRU", "£", "CAD", "CHF", "¥"].includes(localSettings.currency || 'FCFA') && (
+                        <input
+                          type="text"
+                          name="currency"
+                          value={localSettings.currency}
+                          onChange={handleChange}
+                          placeholder="Ex: XOF, USD, MAD..."
+                          className="w-full px-4 py-2.5 bg-white border border-primary/30 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300"
+                        />
+                      )}
+                    </div>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-[13px] font-medium text-gray-700 mb-1.5">{t('settings.footerMentions')}</label>
