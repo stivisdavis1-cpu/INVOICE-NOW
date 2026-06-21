@@ -54,7 +54,10 @@ async function handleRequest(req: NextRequest, params: { path: string[] }) {
   };
   
   if (req.method !== "GET" && req.method !== "HEAD" && req.method !== "OPTIONS") {
-    fetchOptions.body = await req.arrayBuffer();
+    const buffer = await req.arrayBuffer();
+    if (buffer.byteLength > 0) {
+      fetchOptions.body = buffer;
+    }
   }
 
   try {
