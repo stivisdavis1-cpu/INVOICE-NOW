@@ -54,9 +54,7 @@ async function handleRequest(req: NextRequest, params: { path: string[] }) {
   };
   
   if (req.method !== "GET" && req.method !== "HEAD" && req.method !== "OPTIONS") {
-    fetchOptions.body = req.body;
-    // @ts-ignore: Required by Node.js for streaming fetch bodies
-    fetchOptions.duplex = "half";
+    fetchOptions.body = await req.arrayBuffer();
   }
 
   try {
