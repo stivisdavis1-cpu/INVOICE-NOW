@@ -220,7 +220,9 @@ export const generateWordInvoice = async (
       // Company settings
       companyName: settings.companyName || '',
       ninea: settings.ninea || '',
+      nineaLabel: settings.nineaLabel || 'NINEA',
       rccm: settings.rccm || '',
+      rccmLabel: settings.rccmLabel || 'RCCM',
       companyAddress: settings.address || '',
       footerMentions: settings.footerMentions || '',
 

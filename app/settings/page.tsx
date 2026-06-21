@@ -369,7 +369,35 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[13px] font-medium text-gray-700 mb-1.5">{t('settings.ninea')}</label>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <input
+                        list="tax-id-labels"
+                        name="nineaLabel"
+                        value={localSettings.nineaLabel || 'NINEA'}
+                        onChange={handleChange}
+                        className="text-[13px] font-bold text-gray-900 bg-transparent border-b border-dashed border-gray-300 focus:border-primary outline-none hover:bg-gray-50 px-1 py-0.5 max-w-[200px]"
+                        title="Modifiez ce libellé selon votre pays"
+                      />
+                      <datalist id="tax-id-labels">
+                        <option value="NINEA">Sénégal</option>
+                        <option value="NIU">Cameroun, Congo</option>
+                        <option value="NCC">Côte d'Ivoire</option>
+                        <option value="IFU">Bénin, Burkina Faso</option>
+                        <option value="NIF">Togo, Guinée, Mali, Niger, Tchad, Gabon, Mauritanie, Madagascar, Burundi, Djibouti, RCA, Comores, Algérie</option>
+                        <option value="ID. NAT.">RDC</option>
+                        <option value="ICE">Maroc</option>
+                        <option value="Matricule Fiscal">Tunisie</option>
+                        <option value="TIN">Rwanda, Nigeria, Ghana, Ouganda, Tanzanie, Egypte</option>
+                        <option value="PIN">Kenya</option>
+                        <option value="VAT Number">Afrique du Sud, UK</option>
+                        <option value="SIRET">France</option>
+                        <option value="Numéro d'entreprise">Belgique</option>
+                        <option value="IDE">Suisse</option>
+                        <option value="NE">Canada</option>
+                        <option value="EIN">USA</option>
+                        <option value="Numéro Fiscal">Générique</option>
+                      </datalist>
+                    </div>
                     <input
                       type="text"
                       name="ninea"
@@ -379,7 +407,31 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[13px] font-medium text-gray-700 mb-1.5">{t('settings.rccm')}</label>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <input
+                        list="company-id-labels"
+                        name="rccmLabel"
+                        value={localSettings.rccmLabel || 'RCCM'}
+                        onChange={handleChange}
+                        className="text-[13px] font-bold text-gray-900 bg-transparent border-b border-dashed border-gray-300 focus:border-primary outline-none hover:bg-gray-50 px-1 py-0.5 max-w-[200px]"
+                        title="Modifiez ce libellé selon votre pays"
+                      />
+                      <datalist id="company-id-labels">
+                        <option value="RCCM">Espace OHADA (Sénégal, CI, Cameroun, Bénin, Togo, etc.)</option>
+                        <option value="RC">Maroc, Algérie, Tunisie, Burundi</option>
+                        <option value="RCS">France, Madagascar</option>
+                        <option value="Company Code">Rwanda</option>
+                        <option value="CIPC Number">Afrique du Sud</option>
+                        <option value="RC Number">Nigeria (CAC)</option>
+                        <option value="Registration Number">Ghana, Kenya</option>
+                        <option value="Numéro BCE">Belgique</option>
+                        <option value="CH-ID">Suisse</option>
+                        <option value="Numéro de constitution">Canada</option>
+                        <option value="State File Number">USA</option>
+                        <option value="CRN">UK</option>
+                        <option value="Registre de Commerce">Générique</option>
+                      </datalist>
+                    </div>
                     <input
                       type="text"
                       name="rccm"

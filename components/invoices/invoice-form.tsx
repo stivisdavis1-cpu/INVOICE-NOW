@@ -364,14 +364,14 @@ export function InvoiceForm({ initialData, fixedType }: InvoiceFormProps) {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">NINEA</label>
+                        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">{settings.nineaLabel || 'NINEA'}</label>
                         <input
                           {...register(`metadata.ninea`)}
                           className="w-full bg-gray-50 border border-gray-200 rounded-sm px-1.5 py-1 outline-none text-[11px] focus:border-gray-800 focus:ring-1 focus:ring-gray-800/20 focus:bg-white transition-all"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">RCCM</label>
+                        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">{settings.rccmLabel || 'RCCM'}</label>
                         <input
                           {...register(`metadata.rccm`)}
                           className="w-full bg-gray-50 border border-gray-200 rounded-sm px-1.5 py-1 outline-none text-[11px] focus:border-gray-800 focus:ring-1 focus:ring-gray-800/20 focus:bg-white transition-all"

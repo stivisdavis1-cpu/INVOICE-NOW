@@ -108,7 +108,9 @@ export const api = {
       id: data.id,
       companyName: data.company_name || '',
       ninea: data.ninea || '',
+      nineaLabel: data.ninea_label || 'NINEA',
       rccm: data.rccm || '',
+      rccmLabel: data.rccm_label || 'RCCM',
       address: data.address || '',
       defaultTva: data.default_tva,
       currency: data.currency || 'XOF',
@@ -146,7 +148,9 @@ export const api = {
       if (companyError) console.error("Failed to update company name", companyError);
     }
     if (rest.ninea !== undefined) settingsUpdates.ninea = rest.ninea;
+    if (rest.nineaLabel !== undefined) settingsUpdates.ninea_label = rest.nineaLabel;
     if (rest.rccm !== undefined) settingsUpdates.rccm = rest.rccm;
+    if (rest.rccmLabel !== undefined) settingsUpdates.rccm_label = rest.rccmLabel;
     if (rest.address !== undefined) settingsUpdates.address = rest.address;
     if (rest.defaultTva !== undefined) settingsUpdates.default_tva = rest.defaultTva;
     if (rest.currency !== undefined) settingsUpdates.currency = rest.currency;

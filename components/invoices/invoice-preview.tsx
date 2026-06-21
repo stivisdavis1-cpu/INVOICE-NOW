@@ -119,8 +119,8 @@ export function InvoicePreview({ data, client, settings, subtotal, tva, total, d
               )}
               <p className="font-bold text-slate-900">{data.metadata?.companyName || settings.companyName}</p>
               <p className="whitespace-pre-wrap">{data.metadata?.address || settings.address}</p>
-              <p>NINEA: {data.metadata?.ninea || settings.ninea}</p>
-              <p>RCCM: {data.metadata?.rccm || settings.rccm}</p>
+              <p>{settings.nineaLabel || 'NINEA'}: {data.metadata?.ninea || settings.ninea}</p>
+              <p>{settings.rccmLabel || 'RCCM'}: {data.metadata?.rccm || settings.rccm}</p>
             </div>
           </div>
 
@@ -132,7 +132,7 @@ export function InvoicePreview({ data, client, settings, subtotal, tva, total, d
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <p className="font-bold text-slate-900 text-lg">{client.name}</p>
                   {client.address && <p className="text-slate-600 mt-1">{client.address}</p>}
-                  {client.ninea && <p className="text-slate-600 mt-1">NINEA: {client.ninea}</p>}
+                  {client.ninea && <p className="text-slate-600 mt-1">{settings.nineaLabel || 'NINEA'}: {client.ninea}</p>}
                 </motion.div>
               ) : (
                 <p className="text-slate-400 italic">Sélectionnez un client...</p>

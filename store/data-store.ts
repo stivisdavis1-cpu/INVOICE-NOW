@@ -135,7 +135,9 @@ export interface Settings {
   userName: string;
   companyName: string;
   ninea: string;
+  nineaLabel?: string;
   rccm: string;
+  rccmLabel?: string;
   address: string;
   defaultTva: number;
   currency: string;
@@ -213,7 +215,9 @@ const initialSettings: Settings = {
   userName: '',
   companyName: '',
   ninea: '',
+  nineaLabel: 'NINEA',
   rccm: '',
+  rccmLabel: 'RCCM',
   address: '',
   defaultTva: 18,
   currency: 'XOF',

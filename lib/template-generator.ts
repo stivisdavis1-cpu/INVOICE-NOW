@@ -26,7 +26,7 @@ export async function generateProTemplateAsBase64(type: 'FACTURE' | 'PROFORMA' =
   const companyDetails = new Paragraph({
     alignment: AlignmentType.LEFT,
     children: [
-      new TextRun({ text: "{companyAddress}\nNINEA: {ninea} | RCCM: {rccm}\nTél: {companyPhone} | Email: {companyEmail}", color: "666666" }),
+      new TextRun({ text: "{companyAddress}\n{nineaLabel}: {ninea} | {rccmLabel}: {rccm}\nTél: {companyPhone} | Email: {companyEmail}", color: "666666" }),
     ],
   });
 
