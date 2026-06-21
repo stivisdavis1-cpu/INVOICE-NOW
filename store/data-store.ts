@@ -343,9 +343,15 @@ export const useDataStore = create<DataStore>((set, get) => ({
         isLocked: i.is_locked,
         workflowId: i.metadata?.workflowId,
         currentStepId: i.metadata?.currentStepId,
-        lines: i.lines?.map((l: any) => ({
-          ...l,
-          unitPrice: l.unit_price,
+        lines: (i.lines || []).sort((a: any, b: any) => a.position - b.position).map((l: any) => ({
+          id: l.id,
+          type: l.type,
+          description: l.description,
+          quantity: typeof l.quantity === 'string' ? parseFloat(l.quantity) : l.quantity,
+          unitPrice: typeof l.unit_price === 'string' ? parseFloat(l.unit_price) : l.unit_price,
+          reference: l.reference,
+          deliverables: l.deliverables,
+          unit: l.unit,
           isForfait: l.is_forfait
         })) || []
       }));

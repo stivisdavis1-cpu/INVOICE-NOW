@@ -24,8 +24,8 @@ const invoiceLineSchema = z.object({
   unit: z.string().optional(),
   isForfait: z.boolean().optional(),
   description: z.string().min(1, 'La description est requise'),
-  quantity: z.number().min(0, 'Min 0'),
-  unitPrice: z.number().min(0, 'Min 0'),
+  quantity: z.coerce.number().min(0, 'Min 0'),
+  unitPrice: z.coerce.number().min(0, 'Min 0'),
 });
 
 const invoiceSchema = z.object({
@@ -176,8 +176,9 @@ export function InvoiceForm({ initialData, fixedType }: InvoiceFormProps) {
           router.push('/invoices');
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert("Erreur de sauvegarde : " + (e.message || JSON.stringify(e)));
     }
   };
 
