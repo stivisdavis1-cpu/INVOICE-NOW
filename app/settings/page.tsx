@@ -738,46 +738,6 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                {employees.filter(e => e.status === 'pending').length > 0 && (
-                  <div className="mt-8">
-                    <h3 className="font-semibold text-amber-600 mb-4 flex items-center gap-2">
-                      <ShieldCheck className="w-5 h-5" />
-                      Demandes d'accès en attente
-                    </h3>
-                    <div className="space-y-3">
-                      {employees.filter(e => e.status === 'pending').map(emp => (
-                        <div key={emp.id} className="flex items-center justify-between bg-amber-50 border border-amber-200 p-4 rounded-xl">
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 font-bold">
-                              {emp.name.charAt(0)}
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900">{emp.name.replace(/\s*\(.*?\)/g, '')}</p>
-                              <p className="text-sm text-gray-500">Souhaite rejoindre votre entreprise</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <button 
-                              onClick={() => updateEmployeeStatus(emp.id, 'active')}
-                              className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors font-medium text-sm shadow-sm"
-                            >
-                              <Check className="w-4 h-4" />
-                              Accepter
-                            </button>
-                            <button 
-                              onClick={() => updateEmployeeStatus(emp.id, 'rejected')}
-                              className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-medium text-sm"
-                            >
-                              <X className="w-4 h-4" />
-                              Refuser
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 <div className="pt-8 border-t border-gray-100">
                   <div className={cn("mb-6 relative transition-opacity", !isPremiumOnly && "opacity-50 pointer-events-none")}>
                     <label className="flex items-center justify-between p-5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:shadow-md transition-all duration-300">
@@ -1033,6 +993,46 @@ export default function SettingsPage() {
                   <h2 className="text-xl font-bold text-gray-900">Sécurité & Accès</h2>
                   <p className="text-gray-500 text-sm mt-1">Paramètres de sécurité de votre compte.</p>
                 </div>
+
+                {employees.filter(e => e.status === 'pending').length > 0 && (
+                  <div className="bg-amber-50/50 p-6 rounded-xl border border-amber-200 shadow-sm space-y-4 mb-6">
+                    <h3 className="font-semibold text-amber-600 flex items-center gap-2">
+                      <ShieldCheck className="w-5 h-5" />
+                      Demandes d'accès en attente
+                    </h3>
+                    <div className="space-y-3">
+                      {employees.filter(e => e.status === 'pending').map(emp => (
+                        <div key={emp.id} className="flex items-center justify-between bg-white border border-amber-200 p-4 rounded-xl shadow-sm">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 font-bold">
+                              {emp.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{emp.name.replace(/\s*\(.*?\)/g, '')}</p>
+                              <p className="text-sm text-gray-500">Souhaite rejoindre votre entreprise</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <button 
+                              onClick={() => updateEmployeeStatus(emp.id, 'active')}
+                              className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors font-medium text-sm shadow-sm"
+                            >
+                              <Check className="w-4 h-4" />
+                              Accepter
+                            </button>
+                            <button 
+                              onClick={() => updateEmployeeStatus(emp.id, 'rejected')}
+                              className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors font-medium text-sm"
+                            >
+                              <X className="w-4 h-4" />
+                              Refuser
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
                   <h3 className="font-semibold text-gray-900">Mot de passe</h3>
