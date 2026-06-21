@@ -383,7 +383,7 @@ export const useDataStore = create<DataStore>((set, get) => ({
         settings: settings, 
         payments: mappedPayments,
         employees: dbEmployees,
-        activeEmployeeId: dbEmployees.length > 0 ? dbEmployees[0].id : null
+        activeEmployeeId: currentUserProfile?.id || null
       });
     } catch (e: any) {
       console.error('Failed to initialize store from Supabase', e.message || JSON.stringify(e));
