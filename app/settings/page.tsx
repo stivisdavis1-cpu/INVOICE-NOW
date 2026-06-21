@@ -181,6 +181,10 @@ export default function SettingsPage() {
     name: string;
     requiredRole: string;
     actionLabel: string;
+    allowReject?: boolean;
+    rejectLabel?: string;
+    allowRequestChanges?: boolean;
+    requestChangesLabel?: string;
   }>({ workflowId: '', name: '', requiredRole: 'any', actionLabel: 'Approuver' });
 
   const handleAddEmployee = (e: React.FormEvent) => {
@@ -217,7 +221,11 @@ export default function SettingsPage() {
         ...s,
         name: stepModalData.name,
         requiredRole: stepModalData.requiredRole as any,
-        actionLabel: stepModalData.actionLabel
+        actionLabel: stepModalData.actionLabel,
+        allowReject: stepModalData.allowReject,
+        rejectLabel: stepModalData.rejectLabel,
+        allowRequestChanges: stepModalData.allowRequestChanges,
+        requestChangesLabel: stepModalData.requestChangesLabel
       } : s);
     } else {
       // Add new
@@ -225,7 +233,11 @@ export default function SettingsPage() {
         id: `STEP-${Date.now()}`,
         name: stepModalData.name,
         requiredRole: stepModalData.requiredRole as any,
-        actionLabel: stepModalData.actionLabel
+        actionLabel: stepModalData.actionLabel,
+        allowReject: stepModalData.allowReject,
+        rejectLabel: stepModalData.rejectLabel,
+        allowRequestChanges: stepModalData.allowRequestChanges,
+        requestChangesLabel: stepModalData.requestChangesLabel
       };
       
       if (typeof stepModalData.insertIndex === 'number') {
@@ -828,7 +840,11 @@ export default function SettingsPage() {
                                         stepId: step.id,
                                         name: step.name,
                                         requiredRole: step.requiredRole,
-                                        actionLabel: step.actionLabel
+                                        actionLabel: step.actionLabel,
+                                        allowReject: step.allowReject,
+                                        rejectLabel: step.rejectLabel,
+                                        allowRequestChanges: step.allowRequestChanges,
+                                        requestChangesLabel: step.requestChangesLabel
                                       });
                                       setIsStepModalOpen(true);
                                     }}
@@ -862,7 +878,11 @@ export default function SettingsPage() {
                                           insertIndex: idx + 1,
                                           name: '',
                                           requiredRole: 'any',
-                                          actionLabel: 'Approuver'
+                                          actionLabel: 'Approuver',
+                                          allowReject: false,
+                                          rejectLabel: 'Refuser',
+                                          allowRequestChanges: false,
+                                          requestChangesLabel: 'Demander des modifications'
                                         });
                                         setIsStepModalOpen(true);
                                       }}
@@ -893,7 +913,11 @@ export default function SettingsPage() {
                                     stepId: undefined,
                                     name: '',
                                     requiredRole: 'any',
-                                    actionLabel: 'Approuver'
+                                    actionLabel: 'Approuver',
+                                    allowReject: false,
+                                    rejectLabel: 'Refuser',
+                                    allowRequestChanges: false,
+                                    requestChangesLabel: 'Demander des modifications'
                                   });
                                   setIsStepModalOpen(true);
                                 }}
@@ -1242,6 +1266,51 @@ export default function SettingsPage() {
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none"
                   required
                 />
+              </div>
+              <div className="pt-2 border-t border-gray-100 space-y-4">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={stepModalData.allowReject || false}
+                    onChange={(e) => setStepModalData({ ...stepModalData, allowReject: e.target.checked })}
+                    className="w-4 h-4 text-primary bg-gray-50 border-gray-300 rounded focus:ring-primary"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Autoriser le rejet (retour à l'état Brouillon)</span>
+                </label>
+                {stepModalData.allowReject && (
+                  <div className="pl-7">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Libellé du bouton de rejet</label>
+                    <input 
+                      type="text" 
+                      value={stepModalData.rejectLabel || 'Refuser'}
+                      onChange={(e) => setStepModalData({ ...stepModalData, rejectLabel: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-sm"
+                      required
+                    />
+                  </div>
+                )}
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={stepModalData.allowRequestChanges || false}
+                    onChange={(e) => setStepModalData({ ...stepModalData, allowRequestChanges: e.target.checked })}
+                    className="w-4 h-4 text-primary bg-gray-50 border-gray-300 rounded focus:ring-primary"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Autoriser la demande de modifications</span>
+                </label>
+                {stepModalData.allowRequestChanges && (
+                  <div className="pl-7">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Libellé du bouton de demande</label>
+                    <input 
+                      type="text" 
+                      value={stepModalData.requestChangesLabel || 'Demander des modifications'}
+                      onChange={(e) => setStepModalData({ ...stepModalData, requestChangesLabel: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-sm"
+                      required
+                    />
+                  </div>
+                )}
               </div>
               <div className="flex gap-3 pt-4">
                 <button type="button" onClick={() => setIsStepModalOpen(false)} className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium">

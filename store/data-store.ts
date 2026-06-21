@@ -52,6 +52,10 @@ export interface WorkflowStep {
   name: string;
   requiredRole: string; // "any" or Employee ID
   actionLabel: string;
+  allowReject?: boolean;
+  rejectLabel?: string;
+  allowRequestChanges?: boolean;
+  requestChangesLabel?: string;
   isFinal?: boolean;
 }
 

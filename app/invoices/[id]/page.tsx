@@ -138,37 +138,79 @@ export default function InvoiceDetailPage() {
             if (!wf || !step || !isAllowed) return null;
 
             return (
-              <button
-                onClick={() => {
-                  const nextStep = wf.steps[stepIndex + 1];
-                  if (nextStep) {
-                    updateInvoice(invoice.id, { currentStepId: nextStep.id });
-                    addNotification({
-                      title: `Document en attente de validation`,
-                      message: `Le document ${invoice.number} nécessite votre validation (Étape: ${nextStep.name}).`,
-                      type: 'warning',
-                      targetEmployeeId: nextStep.requiredRole !== 'any' ? nextStep.requiredRole : undefined,
-                      targetRole: nextStep.requiredRole === 'any' ? 'any' : undefined,
-                      link: `/invoices/${invoice.id}`
-                    });
-                  } else {
-                    // Workflow finished
-                    updateInvoice(invoice.id, { currentStepId: undefined, workflowId: undefined });
-                    updateInvoiceStatus(invoice.id, 'sent');
-                    addNotification({
-                      title: `Document validé`,
-                      message: `Votre document ${invoice.number} a été validé avec succès par l'équipe.`,
-                      type: 'success',
-                      targetEmployeeId: invoice.assigneeId || undefined,
-                      targetRole: !invoice.assigneeId ? 'creator' : undefined,
-                      link: `/invoices/${invoice.id}`
-                    });
-                  }
-                }}
-                className="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full font-medium shadow-md transition-all active:scale-95"
-              >
-                {step.actionLabel}
-              </button>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => {
+                    const nextStep = wf.steps[stepIndex + 1];
+                    if (nextStep) {
+                      updateInvoice(invoice.id, { currentStepId: nextStep.id });
+                      addNotification({
+                        title: `Document en attente de validation`,
+                        message: `Le document ${invoice.number} nécessite votre validation (Étape: ${nextStep.name}).`,
+                        type: 'warning',
+                        targetEmployeeId: nextStep.requiredRole !== 'any' ? nextStep.requiredRole : undefined,
+                        targetRole: nextStep.requiredRole === 'any' ? 'any' : undefined,
+                        link: `/invoices/${invoice.id}`
+                      });
+                    } else {
+                      // Workflow finished
+                      updateInvoice(invoice.id, { currentStepId: undefined, workflowId: undefined });
+                      updateInvoiceStatus(invoice.id, 'sent');
+                      addNotification({
+                        title: `Document validé`,
+                        message: `Votre document ${invoice.number} a été validé avec succès par l'équipe.`,
+                        type: 'success',
+                        targetEmployeeId: invoice.assigneeId || undefined,
+                        targetRole: !invoice.assigneeId ? 'creator' : undefined,
+                        link: `/invoices/${invoice.id}`
+                      });
+                    }
+                  }}
+                  className="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full font-medium shadow-md transition-all active:scale-95"
+                >
+                  {step.actionLabel}
+                </button>
+
+                {step.allowReject && (
+                  <button
+                    onClick={() => {
+                      updateInvoice(invoice.id, { currentStepId: undefined, workflowId: undefined, isLocked: false });
+                      updateInvoiceStatus(invoice.id, 'draft');
+                      addNotification({
+                        title: `Document refusé`,
+                        message: `Le document ${invoice.number} a été refusé à l'étape "${step.name}". Il a été déverrouillé et repassé en brouillon.`,
+                        type: 'warning',
+                        targetEmployeeId: invoice.assigneeId || undefined,
+                        targetRole: !invoice.assigneeId ? 'creator' : undefined,
+                        link: `/invoices/${invoice.id}`
+                      });
+                    }}
+                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-2.5 rounded-full font-medium shadow-md transition-all active:scale-95"
+                  >
+                    {step.rejectLabel || 'Refuser'}
+                  </button>
+                )}
+
+                {step.allowRequestChanges && (
+                  <button
+                    onClick={() => {
+                      const firstStep = wf.steps[0];
+                      updateInvoice(invoice.id, { currentStepId: firstStep.id, isLocked: false });
+                      addNotification({
+                        title: `Modifications requises`,
+                        message: `Des modifications sont demandées sur le document ${invoice.number} (Retour à l'étape: ${firstStep.name}). Le document a été déverrouillé.`,
+                        type: 'info',
+                        targetEmployeeId: invoice.assigneeId || undefined,
+                        targetRole: !invoice.assigneeId ? 'creator' : undefined,
+                        link: `/invoices/${invoice.id}`
+                      });
+                    }}
+                    className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-full font-medium shadow-md transition-all active:scale-95"
+                  >
+                    {step.requestChangesLabel || 'Demander des modifications'}
+                  </button>
+                )}
+              </div>
             );
           })()}
         </div>
