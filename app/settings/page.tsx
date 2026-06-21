@@ -269,7 +269,7 @@ export default function SettingsPage() {
     { id: 'security', label: 'Sécurité & Accès', icon: ShieldCheck },
   ];
 
-  if (!isPremiumOnly) {
+  if (!isAdmin || !isPremiumOnly) {
     tabs = tabs.filter(t => t.id !== 'team');
   }
 
@@ -995,7 +995,7 @@ export default function SettingsPage() {
                   <p className="text-gray-500 text-sm mt-1">Paramètres de sécurité de votre compte.</p>
                 </div>
 
-                {employees.filter(e => e.status === 'pending').length > 0 && (
+                {isAdmin && employees.filter(e => e.status === 'pending').length > 0 && (
                   <div className="bg-amber-50/50 p-6 rounded-xl border border-amber-200 shadow-sm space-y-4 mb-6">
                     <h3 className="font-semibold text-amber-600 flex items-center gap-2">
                       <ShieldCheck className="w-5 h-5" />
